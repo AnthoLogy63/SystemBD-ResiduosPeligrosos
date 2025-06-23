@@ -1,5 +1,4 @@
 package tipo_transporte;
-
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.text.*;
@@ -22,18 +21,32 @@ public class RegistroPanelTipTran extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 60);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Código (máx. 2 caracteres)
+        // Código (máx. 2 dígitos)
         gbc.gridx = 0; gbc.gridy = 0;
         add(new JLabel("Código:"), gbc);
         gbc.gridx = 1;
         tfCodigo = new JTextField(2);
         tfCodigo.setPreferredSize(new Dimension(60, tfCodigo.getPreferredSize().height));
         ((AbstractDocument) tfCodigo.getDocument()).setDocumentFilter(
-            new AlphanumericLengthFilter(2)
+            new UsarNumerico(2)
         );
+        tfCodigo.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                String text = tfCodigo.getText().trim();
+                if (!text.isEmpty()) {
+                    try {
+                        int num = Integer.parseInt(text);
+                        tfCodigo.setText(String.format("%02d", num)); // completa con ceros
+                    } catch (NumberFormatException ex) {
+                        tfCodigo.setText("");
+                    }
+                }
+            }
+        });
         add(tfCodigo, gbc);
 
-        // Nombre (máx. 20 caracteres)
+        // Nombre (máx. 20 caracteres alfanuméricos y espacios)
         gbc.gridx = 0; gbc.gridy = 1;
         add(new JLabel("Nombre:"), gbc);
         gbc.gridx = 1;
@@ -41,7 +54,7 @@ public class RegistroPanelTipTran extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         tfNombre = new JTextField();
         ((AbstractDocument) tfNombre.getDocument()).setDocumentFilter(
-            new AlphanumericLengthFilter(20)
+            new UsarAlfaNumerico(20)
         );
         add(tfNombre, gbc);
 
@@ -58,7 +71,7 @@ public class RegistroPanelTipTran extends JPanel {
         tfEstado.setPreferredSize(new Dimension(60, tfEstado.getPreferredSize().height));
         add(tfEstado, gbc);
 
-        // Inicialmente desactivados (editable = false)
+        // Inicialmente desactivados
         tfCodigo.setEditable(false);
         tfCodigo.setDisabledTextColor(Color.BLACK);
         tfCodigo.setFocusable(false);
@@ -85,11 +98,11 @@ public class RegistroPanelTipTran extends JPanel {
         tfNombre.setEditable(on);
     }
 
-    private static class AlphanumericLengthFilter extends DocumentFilter {
+    private static class UsarAlfaNumerico extends DocumentFilter {
         private final int max;
-        private final Pattern pattern = Pattern.compile("[a-zA-Z0-9]*");
+        private final Pattern pattern = Pattern.compile("[a-zA-Z0-9 ]*"); 
 
-        public AlphanumericLengthFilter(int max) {
+        public UsarAlfaNumerico(int max) {
             this.max = max;
         }
 
@@ -120,6 +133,40 @@ public class RegistroPanelTipTran extends JPanel {
         }
     }
 
+    private static class UsarNumerico extends DocumentFilter {
+        private final int maxDigits;
+
+        public UsarNumerico(int maxDigits) {
+            this.maxDigits = maxDigits;
+        }
+
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                throws BadLocationException {
+            if (string == null || !string.matches("\\d*")) return;
+
+            String current = fb.getDocument().getText(0, fb.getDocument().getLength());
+            String newText = new StringBuilder(current).insert(offset, string).toString();
+
+            if (newText.length() <= maxDigits) {
+                super.insertString(fb, offset, string, attr);
+            }
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                throws BadLocationException {
+            if (text == null || !text.matches("\\d*")) return;
+
+            String current = fb.getDocument().getText(0, fb.getDocument().getLength());
+            String newText = new StringBuilder(current).replace(offset, offset + length, text).toString();
+
+            if (newText.length() <= maxDigits) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
+    }
+
     public void cargarDesdeGrilla(JTable table, int fila) {
         tfCodigo.setText(table.getValueAt(fila, 0).toString());
         tfNombre.setText(table.getValueAt(fila, 1).toString());
@@ -132,5 +179,4 @@ public class RegistroPanelTipTran extends JPanel {
         tfEstado.setText("");
         setEditableRegistro(false);
     }
-
 }

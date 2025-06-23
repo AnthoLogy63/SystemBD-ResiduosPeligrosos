@@ -13,7 +13,6 @@ public class GrillaPanelTipTran extends JPanel {
         setBorder(BorderFactory.createTitledBorder("Tabla_Tipo_Transporte"));
         setLayout(new BorderLayout());
 
-        // Modelo de datos
         DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Código", "Nombre", "Estado Registro"}, 0
         ) {
@@ -58,18 +57,15 @@ public class GrillaPanelTipTran extends JPanel {
             }
         };
 
-        // Aplicar renderer unificado a todas las columnas
         TableColumnModel colModel = table.getColumnModel();
         for (int i = 0; i < colModel.getColumnCount(); i++) {
             colModel.getColumn(i).setCellRenderer(unifiedRenderer);
         }
 
-        // Ajustar anchos
         colModel.getColumn(0).setPreferredWidth(80);
         colModel.getColumn(1).setPreferredWidth(300);
         colModel.getColumn(2).setPreferredWidth(120);
 
-        // Scroll y layout
         JScrollPane scroll = new JScrollPane(table);
         scroll.getViewport().setBackground(Color.decode("#FFFFFF"));
 

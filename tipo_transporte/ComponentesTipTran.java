@@ -18,14 +18,14 @@ public class ComponentesTipTran extends JFrame {
     private int operacion = 0;
 
     public ComponentesTipTran() {
-        setTitle("PANEL DE GESTION - TIPO DE TRANSPORTE");
+        setTitle("GZZ_TIPOTRANSPORTE");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(570, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(Color.decode("#F1F3F8"));
 
-        JLabel lblTitulo = new JLabel("TIPO DE TRANSPORTE", SwingConstants.LEFT);
+        JLabel lblTitulo = new JLabel("GZZ_TIPOTRANSPORTE", SwingConstants.LEFT);
         lblTitulo.setFont(lblTitulo.getFont().deriveFont(Font.BOLD, 18f));
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(5, 10, 0, 0));
         add(lblTitulo, BorderLayout.NORTH);
@@ -69,6 +69,10 @@ public class ComponentesTipTran extends JFrame {
                     String estadoM = pnlGrilla.getTable().getValueAt(filaM, 2).toString();
                     if ("*".equals(estadoM)) {
                         JOptionPane.showMessageDialog(this, "No puedes modificar un registro eliminado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    if ("I".equals(estadoM)) {
+                        JOptionPane.showMessageDialog(this, "No puedes modificar un registro inactivo.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
