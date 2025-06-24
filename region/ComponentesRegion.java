@@ -1,38 +1,39 @@
-package tipo_transporte;
+package region;
+
+import region.dao.RegionDAO;
+import region.modelo.RegionModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import tipo_transporte.dao.TipoTransporteDAO;
-import tipo_transporte.modelo.TipoTransporteModel;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
-//parte imporatente para unir todo 
-public class ComponentesTipTran extends JFrame {
-    private TipoTransporteDAO dao = new TipoTransporteDAO();
-    private GrillaPanelTipTran pnlGrilla;
-    private RegistroPanelTipTran pnlRegistro;
-    private BotonesPanelTipTran pnlBotones;
+
+public class ComponentesRegion extends JFrame {
+    private RegionDAO dao = new RegionDAO();
+    private GrillaPanelRegion pnlGrilla;
+    private RegistroPanelRegion pnlRegistro;
+    private BotonesPanelRegion pnlBotones;
     private JLabel statusLabel;
     private int CarFlaAct = 0;
     private int operacion = 0;
 
-    public ComponentesTipTran() {
-        setTitle("GZZ_TIPOTRANSPORTE");
+    public ComponentesRegion() {
+        setTitle("GZZ_REGION");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(570, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(Color.decode("#F1F3F8"));
 
-        JLabel lblTitulo = new JLabel("GZZ_TIPOTRANSPORTE", SwingConstants.LEFT);
+        JLabel lblTitulo = new JLabel("GZZ_REGION", SwingConstants.LEFT);
         lblTitulo.setFont(lblTitulo.getFont().deriveFont(Font.BOLD, 18f));
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(5, 10, 0, 0));
         add(lblTitulo, BorderLayout.NORTH);
 
-        pnlRegistro = new RegistroPanelTipTran();
-        pnlGrilla = new GrillaPanelTipTran();
-        pnlBotones = new BotonesPanelTipTran();
+        pnlRegistro = new RegistroPanelRegion();
+        pnlGrilla = new GrillaPanelRegion();
+        pnlBotones = new BotonesPanelRegion();
 
         JPanel content = new JPanel(new BorderLayout());
         content.add(pnlRegistro, BorderLayout.NORTH);
@@ -57,7 +58,7 @@ public class ComponentesTipTran extends JFrame {
                     operacion = 1;
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
-                    statusLabel.setText("Estado Eligido: Adicionar – Ingresa un nuevo código y nombre.");
+                    statusLabel.setText("Estado: Adicionar – Ingresa un nuevo código y nombre.");
                     break;
 
                 case "Modificar":
@@ -67,12 +68,8 @@ public class ComponentesTipTran extends JFrame {
                         return;
                     }
                     String estadoM = pnlGrilla.getTable().getValueAt(filaM, 2).toString();
-                    if ("*".equals(estadoM)) {
-                        JOptionPane.showMessageDialog(this, "No puedes modificar un registro eliminado.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                    if ("I".equals(estadoM)) {
-                        JOptionPane.showMessageDialog(this, "No puedes modificar un registro inactivo.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                    if ("*".equals(estadoM) || "I".equals(estadoM)) {
+                        JOptionPane.showMessageDialog(this, "No puedes modificar un registro inactivo o eliminado.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
@@ -87,7 +84,7 @@ public class ComponentesTipTran extends JFrame {
                     operacion = 2;
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
-                    statusLabel.setText("Estado Eligido: Modificar – Edita el nombre del registro seleccionado.");
+                    statusLabel.setText("Estado: Modificar – Edita el nombre del registro seleccionado.");
                     break;
 
                 case "Eliminar":
@@ -103,16 +100,13 @@ public class ComponentesTipTran extends JFrame {
                     }
 
                     pnlRegistro.cargarDesdeGrilla(pnlGrilla.getTable(), filaE);
-
                     int confirm = JOptionPane.showConfirmDialog(this,
-                        "¿Estás seguro de que deseas eliminar este registro?",
-                        "Confirmar eliminación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE);
+                            "¿Estás seguro de que deseas eliminar este registro?",
+                            "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE);
 
-                    if (confirm != JOptionPane.YES_OPTION) {
-                        return;
-                    }
+                    if (confirm != JOptionPane.YES_OPTION) return;
 
                     pnlRegistro.getTfEstado().setText("*");
                     pnlRegistro.setEditableRegistro(false);
@@ -120,7 +114,7 @@ public class ComponentesTipTran extends JFrame {
                     operacion = 3;
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
-                    statusLabel.setText("Estado Eligido: Eliminar – Confirmar eliminación del registro seleccionado.");
+                    statusLabel.setText("Estado: Eliminar – Confirmar eliminación del registro.");
                     break;
 
                 case "Inactivar":
@@ -146,7 +140,7 @@ public class ComponentesTipTran extends JFrame {
                     operacion = 4;
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
-                    statusLabel.setText("Estado Eligido: Inactivar – Confirma para marcar el registro como inactivo.");
+                    statusLabel.setText("Estado: Inactivar – Confirmar inactivación del registro.");
                     break;
 
                 case "Reactivar":
@@ -156,8 +150,8 @@ public class ComponentesTipTran extends JFrame {
                         return;
                     }
                     String estadoR = pnlGrilla.getTable().getValueAt(filaR, 2).toString();
-                    if ("A".equals(estadoR)) {
-                        JOptionPane.showMessageDialog(this, "El registro ya está activo.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                    if (!estadoR.equals("I") && !estadoR.equals("*")) {
+                        JOptionPane.showMessageDialog(this, "Solo puedes reactivar registros inactivos o eliminados.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
@@ -168,7 +162,7 @@ public class ComponentesTipTran extends JFrame {
                     operacion = 5;
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
-                    statusLabel.setText("Estado Eligido: Reactivar – Confirma reactivacióon del registro seleccionado.");
+                    statusLabel.setText("Estado: Reactivar – Confirmar reactivación del registro.");
                     break;
 
                 case "Actualizar":
@@ -188,10 +182,10 @@ public class ComponentesTipTran extends JFrame {
                                     JOptionPane.showMessageDialog(this, "Ya existe un registro con ese código.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                                     return;
                                 }
-                                dao.insert(new TipoTransporteModel(code, name, pnlRegistro.getTfEstado().getText()));
+                                dao.insert(new RegionModel(code, name, pnlRegistro.getTfEstado().getText()));
                                 break;
                             case 2:
-                                dao.update(new TipoTransporteModel(code, name, pnlRegistro.getTfEstado().getText()));
+                                dao.update(new RegionModel(code, name, pnlRegistro.getTfEstado().getText()));
                                 break;
                             case 3:
                                 dao.softDelete(code);
@@ -211,7 +205,7 @@ public class ComponentesTipTran extends JFrame {
                         pnlBotones.activarModoNormal();
                         pnlRegistro.getTfCodigo().setFocusable(false);
                         pnlRegistro.getTfNombre().setFocusable(false);
-                        statusLabel.setText("Registro procesado exitosamente - Elige una nueva acción para continuar.");
+                        statusLabel.setText("Registro procesado exitosamente.");
                     } catch (SQLException e) {
                         JOptionPane.showMessageDialog(this, "Error al guardar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -219,13 +213,11 @@ public class ComponentesTipTran extends JFrame {
 
                 case "Cancelar":
                     pnlRegistro.limpiar();
-                    pnlRegistro.getTfCodigo().setFocusable(false);
-                    pnlRegistro.getTfNombre().setFocusable(false);
                     CarFlaAct = 0;
                     operacion = 0;
                     pnlBotones.marcarInactivo();
                     pnlBotones.activarModoNormal();
-                    statusLabel.setText("Operación cancelada. Elige una acción para continuar.");
+                    statusLabel.setText("Operación cancelada.");
                     break;
 
                 case "Salir":
@@ -240,10 +232,10 @@ public class ComponentesTipTran extends JFrame {
     private void cargarTabla() {
         DefaultTableModel model = (DefaultTableModel) pnlGrilla.getTable().getModel();
         try {
-            List<TipoTransporteModel> lista = dao.findAll();
+            List<RegionModel> lista = dao.findAll();
             model.setRowCount(0);
-            for (TipoTransporteModel tt : lista) {
-                model.addRow(new Object[]{ tt.getCodigo(), tt.getNombre(), tt.getEstado() });
+            for (RegionModel r : lista) {
+                model.addRow(new Object[]{ r.getCodigo(), r.getNombre(), r.getEstado() });
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
