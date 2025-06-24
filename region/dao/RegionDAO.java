@@ -1,7 +1,7 @@
 package region.dao;
 
 import region.modelo.RegionModel;
-import tipo_transporte.conexion.DBConnection;
+import src.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

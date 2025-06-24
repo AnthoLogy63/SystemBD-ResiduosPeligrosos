@@ -1,11 +1,12 @@
 package tipo_residuo.dao;
 
 import tipo_residuo.modelo.TipoResiduoModel;
-import tipo_transporte.conexion.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import src.DBConnection;
 
 public class TipoResiduoDAO {
 

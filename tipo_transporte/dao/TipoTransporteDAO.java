@@ -1,11 +1,12 @@
 package tipo_transporte.dao;
 
-import tipo_transporte.conexion.DBConnection;
 import tipo_transporte.modelo.TipoTransporteModel;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import src.DBConnection;
 
 public class TipoTransporteDAO {
 

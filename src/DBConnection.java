@@ -1,4 +1,4 @@
-package tipo_transporte.conexion;
+package src;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

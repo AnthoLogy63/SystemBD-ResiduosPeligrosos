@@ -1,11 +1,12 @@
 package toxicidad.dao;
 
 import toxicidad.modelo.ToxicidadModel;
-import tipo_transporte.conexion.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import src.DBConnection;
 
 public class ToxicidadDAO {
 

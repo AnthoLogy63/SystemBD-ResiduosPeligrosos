@@ -1,7 +1,7 @@
 package envase.dao;
 
 import envase.modelo.EnvaseModel;
-import tipo_transporte.conexion.DBConnection;
+import src.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

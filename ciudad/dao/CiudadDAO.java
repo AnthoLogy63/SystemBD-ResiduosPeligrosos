@@ -1,7 +1,7 @@
 package ciudad.dao;
 
 import ciudad.modelo.CiudadModel;
-import tipo_transporte.conexion.DBConnection;
+import src.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
