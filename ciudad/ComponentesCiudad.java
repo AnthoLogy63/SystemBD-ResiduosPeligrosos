@@ -2,6 +2,7 @@ package ciudad;
 
 import ciudad.dao.CiudadDAO;
 import ciudad.modelo.CiudadModel;
+import menu.MenuPrincipal;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -20,7 +21,7 @@ public class ComponentesCiudad extends JFrame {
 
     public ComponentesCiudad() {
         setTitle("GZZ_CIUDAD");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(620, 570);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -213,8 +214,8 @@ public class ComponentesCiudad extends JFrame {
                     break;
 
                 case "Salir":
-                    System.exit(0);
-                    break;
+                    new MenuPrincipal().setVisible(true);
+                    dispose();
             }
         });
 

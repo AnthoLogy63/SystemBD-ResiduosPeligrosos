@@ -7,6 +7,7 @@ import java.awt.*;
 import java.util.regex.Pattern;
 
 public class RegistroPanelCodigoResiduo extends JPanel {
+
     private JTextField tfCodigo;
     private JTextField tfDescripcion;
     private JTextField tfEstado;
@@ -22,26 +23,26 @@ public class RegistroPanelCodigoResiduo extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 60);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Código
+        // Código (sólo 3 dígitos, prefijo R se añadirá al guardar)
         gbc.gridx = 0; gbc.gridy = 0;
         add(new JLabel("Código:"), gbc);
         gbc.gridx = 1;
-        tfCodigo = new JTextField(5);
-        tfCodigo.setPreferredSize(new Dimension(80, tfCodigo.getPreferredSize().height));
-        ((AbstractDocument) tfCodigo.getDocument()).setDocumentFilter(new UsarCodigoResiduo(5));
+        tfCodigo = new JTextField(3);
+        tfCodigo.setPreferredSize(new Dimension(60, tfCodigo.getPreferredSize().height));
+        ((AbstractDocument) tfCodigo.getDocument()).setDocumentFilter(new DigitosTres());
         add(tfCodigo, gbc);
 
-        // Descripción
+        // Descripción (hasta 100 caracteres alfanuméricos y espacios)
         gbc.gridx = 0; gbc.gridy = 1;
         add(new JLabel("Descripción:"), gbc);
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         tfDescripcion = new JTextField();
-        ((AbstractDocument) tfDescripcion.getDocument()).setDocumentFilter(new UsarTextoLibre(100));
+        ((AbstractDocument) tfDescripcion.getDocument()).setDocumentFilter(new AlfanumericoEspacios(100));
         add(tfDescripcion, gbc);
 
-        // Estado
+        // Estado (A, I o *)
         gbc.gridx = 0; gbc.gridy = 2;
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
@@ -56,13 +57,7 @@ public class RegistroPanelCodigoResiduo extends JPanel {
         add(tfEstado, gbc);
 
         // Inicialmente desactivados
-        tfCodigo.setEditable(false);
-        tfCodigo.setDisabledTextColor(Color.BLACK);
-        tfCodigo.setFocusable(false);
-
-        tfDescripcion.setEditable(false);
-        tfDescripcion.setDisabledTextColor(Color.BLACK);
-        tfDescripcion.setFocusable(false);
+        setEditableRegistro(false);
     }
 
     public JTextField getTfCodigo() {
@@ -85,7 +80,7 @@ public class RegistroPanelCodigoResiduo extends JPanel {
     }
 
     public void cargarDesdeGrilla(JTable table, int fila) {
-        tfCodigo.setText(table.getValueAt(fila, 0).toString());
+        tfCodigo.setText(table.getValueAt(fila, 0).toString().substring(1)); // eliminar 'R'
         tfDescripcion.setText(table.getValueAt(fila, 1).toString());
         tfEstado.setText(table.getValueAt(fila, 2).toString());
     }
@@ -97,73 +92,65 @@ public class RegistroPanelCodigoResiduo extends JPanel {
         setEditableRegistro(false);
     }
 
-    private static class UsarCodigoResiduo extends DocumentFilter {
-        private final int maxLength;
-        private final Pattern pattern = Pattern.compile("[A-Z0-9]*");
-
-        public UsarCodigoResiduo(int maxLength) {
-            this.maxLength = maxLength;
-        }
+    // Validación para 3 dígitos numéricos
+    private static class DigitosTres extends DocumentFilter {
+        private final Pattern pattern = Pattern.compile("\\d{0,3}");
 
         @Override
         public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
                 throws BadLocationException {
-            if (string != null && pattern.matcher(string).matches()) {
-                Document doc = fb.getDocument();
-                String newText = doc.getText(0, doc.getLength()) + string;
-                if (newText.length() <= maxLength) {
-                    super.insertString(fb, offset, string.toUpperCase(), attr);
-                }
+            if (pattern.matcher(string).matches()) {
+                super.insertString(fb, offset, string, attr);
             }
         }
 
         @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                 throws BadLocationException {
-            if (text != null && pattern.matcher(text).matches()) {
-                Document doc = fb.getDocument();
-                String current = doc.getText(0, doc.getLength());
-                String before = current.substring(0, offset);
-                String after = current.substring(offset + length);
-                String newText = before + text + after;
-                if (newText.length() <= maxLength) {
-                    super.replace(fb, offset, length, text.toUpperCase(), attrs);
-                }
+            Document doc = fb.getDocument();
+            String current = doc.getText(0, doc.getLength());
+            String before = current.substring(0, offset);
+            String after = current.substring(offset + length);
+            String newText = before + text + after;
+
+            if (pattern.matcher(newText).matches()) {
+                super.replace(fb, offset, length, text, attrs);
             }
         }
     }
 
-    private static class UsarTextoLibre extends DocumentFilter {
-        private final int maxLength;
+    // Validación para alfanumérico con espacios (hasta cierto máximo)
+    private static class AlfanumericoEspacios extends DocumentFilter {
+        private final int max;
+        private final Pattern pattern = Pattern.compile("[a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ,.\\-()]*");
 
-        public UsarTextoLibre(int maxLength) {
-            this.maxLength = maxLength;
+        public AlfanumericoEspacios(int max) {
+            this.max = max;
         }
 
         @Override
         public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
                 throws BadLocationException {
-            if (string != null) {
-                Document doc = fb.getDocument();
-                String newText = doc.getText(0, doc.getLength()) + string;
-                if (newText.length() <= maxLength) {
-                    super.insertString(fb, offset, string, attr);
-                }
+            if (string == null) return;
+            Document doc = fb.getDocument();
+            String newText = doc.getText(0, doc.getLength()) + string;
+            if (newText.length() <= max && pattern.matcher(string).matches()) {
+                super.insertString(fb, offset, string, attr);
             }
         }
 
         @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                 throws BadLocationException {
-            if (text != null) {
-                Document doc = fb.getDocument();
-                String current = doc.getText(0, doc.getLength());
-                String before = current.substring(0, offset);
-                String after = current.substring(offset + length);
-                String newText = before + text + after;
-                if (newText.length() <= maxLength) {
-                    super.replace(fb, offset, length, text, attrs);
-                }
+            if (text == null) return;
+            Document doc = fb.getDocument();
+            String current = doc.getText(0, doc.getLength());
+            String before = current.substring(0, offset);
+            String after = current.substring(offset + length);
+            String newText = before + text + after;
+
+            if (newText.length() <= max && pattern.matcher(text).matches()) {
+                super.replace(fb, offset, length, text, attrs);
             }
         }
     }

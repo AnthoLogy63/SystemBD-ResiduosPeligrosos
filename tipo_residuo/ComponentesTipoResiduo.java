@@ -5,6 +5,9 @@ import tipo_residuo.modelo.TipoResiduoModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import menu.MenuPrincipal;
+
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,7 +23,7 @@ public class ComponentesTipoResiduo extends JFrame {
 
     public ComponentesTipoResiduo() {
         setTitle("GZZ_TIPORESIDUO");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(570, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -182,7 +185,11 @@ public class ComponentesTipoResiduo extends JFrame {
                     pnlBotones.activarModoNormal();
                     statusLabel.setText("Operación cancelada.");
                 }
-                case "Salir" -> System.exit(0);
+                
+                case "Salir" -> {
+                    new MenuPrincipal().setVisible(true);
+                    dispose();
+                }
             }
         });
 

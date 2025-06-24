@@ -2,6 +2,7 @@ package envase;
 
 import envase.dao.EnvaseDAO;
 import envase.modelo.EnvaseModel;
+import menu.MenuPrincipal;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -20,7 +21,7 @@ public class ComponentesEnvase extends JFrame {
 
     public ComponentesEnvase() {
         setTitle("GZZ_ENVASE");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(570, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -216,8 +217,8 @@ public class ComponentesEnvase extends JFrame {
                     break;
 
                 case "Salir":
-                    System.exit(0);
-                    break;
+                    new MenuPrincipal().setVisible(true);
+                    dispose();
             }
         });
 

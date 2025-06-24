@@ -5,6 +5,9 @@ import region.modelo.RegionModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import menu.MenuPrincipal;
+
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,7 +23,7 @@ public class ComponentesRegion extends JFrame {
 
     public ComponentesRegion() {
         setTitle("GZZ_REGION");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(570, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -221,8 +224,8 @@ public class ComponentesRegion extends JFrame {
                     break;
 
                 case "Salir":
-                    System.exit(0);
-                    break;
+                    new MenuPrincipal().setVisible(true);
+                    dispose();
             }
         });
 

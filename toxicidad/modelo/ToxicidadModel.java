@@ -1,30 +1,23 @@
 package toxicidad.modelo;
 
-/**
- * Representa un nivel de toxicidad.
- * Ejemplo:
- *   ToxCod = 1
- *   ToxNom = "Bajo"
- *   ToxEst = "A"
- */
 public class ToxicidadModel {
-    private String codigo;
+    private int codigo;
     private String nombre;
     private String estado;
 
     public ToxicidadModel() {}
 
-    public ToxicidadModel(String codigo, String nombre, String estado) {
+    public ToxicidadModel(int codigo, String nombre, String estado) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.estado = estado;
     }
 
-    public String getCodigo() {
+    public int getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(String codigo) {
+    public void setCodigo(int codigo) {
         this.codigo = codigo;
     }
 

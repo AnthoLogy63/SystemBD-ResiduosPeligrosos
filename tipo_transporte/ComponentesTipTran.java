@@ -2,6 +2,8 @@ package tipo_transporte;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import menu.MenuPrincipal;
 import tipo_transporte.dao.TipoTransporteDAO;
 import tipo_transporte.modelo.TipoTransporteModel;
 import java.awt.*;
@@ -19,7 +21,7 @@ public class ComponentesTipTran extends JFrame {
 
     public ComponentesTipTran() {
         setTitle("GZZ_TIPOTRANSPORTE");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(570, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -229,8 +231,8 @@ public class ComponentesTipTran extends JFrame {
                     break;
 
                 case "Salir":
-                    System.exit(0);
-                    break;
+                    new MenuPrincipal().setVisible(true); // o como se llame tu menú
+                    dispose();
             }
         });
 

@@ -5,6 +5,9 @@ import tratamiento.modelo.TratamientoModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import menu.MenuPrincipal;
+
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,7 +23,7 @@ public class ComponentesTratamiento extends JFrame {
 
     public ComponentesTratamiento() {
         setTitle("GZZ_TRATAMIENTO");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(570, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -193,7 +196,10 @@ public class ComponentesTratamiento extends JFrame {
                     pnlBotones.activarModoNormal();
                     statusLabel.setText("Acción cancelada.");
                 }
-                case "Salir" -> System.exit(0);
+                case "Salir" -> {
+                    new MenuPrincipal().setVisible(true);
+                    dispose();
+                }
             }
         });
 
