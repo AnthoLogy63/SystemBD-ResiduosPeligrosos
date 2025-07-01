@@ -224,7 +224,6 @@ public class ComponentesRegion extends JFrame {
                     break;
 
                 case "Salir":
-                    new MenuPrincipal().setVisible(true);
                     dispose();
             }
         });

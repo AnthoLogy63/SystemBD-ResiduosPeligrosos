@@ -1,8 +1,8 @@
-package ciudad;
+package transportista;
 
-import ciudad.dao.CiudadDAO;
-import ciudad.modelo.CiudadModel;
 import menu.MenuPrincipal;
+import transportista.dao.TransportistaDAO;
+import transportista.modelo.TransportistaModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,36 +10,59 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ComponentesCiudad extends JFrame {
-    private CiudadDAO dao = new CiudadDAO();
-    private GrillaPanelCiudad pnlGrilla;
-    private RegistroPanelCiudad pnlRegistro;
-    private BotonesPanelCiudad pnlBotones;
+public class ComponentesTransportista extends JFrame {
+    private final TransportistaDAO dao = new TransportistaDAO();
+    private GrillaPanelTransportista pnlGrilla;
+    private RegistroPanelTransportista pnlRegistro;
+    private BotonesPanelTransportista pnlBotones;
     private JLabel statusLabel;
+    private static final int FILAS_POR_PAGINA = 10;
+    private int paginaActual = 1;
+    private int totalPaginas = 1;
     private int CarFlaAct = 0;
     private int operacion = 0;
 
-    public ComponentesCiudad() {
-        setTitle("GZZ_CIUDAD");
+    public ComponentesTransportista() {
+        setTitle("R1M_TRANSPORTISTA");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(620, 570);
+        setSize(750, 600);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(Color.decode("#F1F3F8"));
 
-        JLabel lblTitulo = new JLabel("GZZ_CIUDAD", SwingConstants.LEFT);
+        JLabel lblTitulo = new JLabel("R1M_TRANSPORTISTA", SwingConstants.LEFT);
         lblTitulo.setFont(lblTitulo.getFont().deriveFont(Font.BOLD, 18f));
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(5, 10, 0, 0));
         add(lblTitulo, BorderLayout.NORTH);
 
-        pnlRegistro = new RegistroPanelCiudad();
-        pnlGrilla = new GrillaPanelCiudad();
-        pnlBotones = new BotonesPanelCiudad();
+        pnlRegistro = new RegistroPanelTransportista();
+        pnlGrilla = new GrillaPanelTransportista();
+        pnlBotones = new BotonesPanelTransportista();
+
+        pnlBotones.getBtnAnterior().addActionListener(e -> {
+            if (paginaActual > 1) {
+                paginaActual--;
+                cargarTabla();
+            }
+        });
+
+        pnlBotones.getBtnSiguiente().addActionListener(e -> {
+            if (paginaActual < totalPaginas) {
+                paginaActual++;
+                cargarTabla();
+            }
+        });
 
         JPanel content = new JPanel(new BorderLayout());
         content.add(pnlRegistro, BorderLayout.NORTH);
         content.add(pnlGrilla, BorderLayout.CENTER);
-        content.add(pnlBotones, BorderLayout.SOUTH);
+
+        JPanel panelBotonesContainer = new JPanel(new BorderLayout());
+        panelBotonesContainer.setBackground(Color.WHITE);
+        panelBotonesContainer.add(pnlBotones.getPanelPaginacion(), BorderLayout.NORTH);
+        panelBotonesContainer.add(pnlBotones, BorderLayout.CENTER);
+        content.add(panelBotonesContainer, BorderLayout.SOUTH);
+
         add(content, BorderLayout.CENTER);
 
         statusLabel = new JLabel("Estado: Debes adicionar un registro nuevo o elegir una acción.");
@@ -49,52 +72,48 @@ public class ComponentesCiudad extends JFrame {
 
         pnlBotones.setActionListener(cmd -> {
             switch (cmd) {
-                case "Adicionar":
+                case "Adicionar" -> {
                     pnlRegistro.limpiar();
-                    cargarComboRegiones();
+                    cargarCombos();
                     pnlRegistro.setEditableRegistro(true);
                     pnlRegistro.getTfEstado().setText("A");
-                    pnlRegistro.getTfCodigo().setFocusable(true);
-                    pnlRegistro.getTfNombre().setFocusable(true);
+                    pnlRegistro.getTfNif().setFocusable(true);
                     CarFlaAct = 1;
                     operacion = 1;
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
-                    statusLabel.setText("Estado: Adicionar – Ingresa los datos de la ciudad.");
-                    break;
-
-                case "Modificar":
+                    statusLabel.setText("Estado: Adicionar – Ingresa los datos del transportista.");
+                }
+                case "Modificar" -> {
                     int filaM = pnlGrilla.getTable().getSelectedRow();
                     if (filaM < 0) {
                         JOptionPane.showMessageDialog(this, "Selecciona una fila para modificar.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    String estadoM = pnlGrilla.getTable().getValueAt(filaM, 2).toString();
+                    String estadoM = pnlGrilla.getTable().getValueAt(filaM, 5).toString();
                     if ("*".equals(estadoM) || "I".equals(estadoM)) {
                         JOptionPane.showMessageDialog(this, "No puedes modificar un registro inactivo o eliminado.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     pnlRegistro.cargarDesdeGrilla(pnlGrilla.getTable(), filaM);
+                    cargarCombos();
                     pnlRegistro.setEditableRegistro(true);
-                    pnlRegistro.getTfCodigo().setEditable(false);
-                    pnlRegistro.getTfEstado().setEditable(false);
-                    pnlRegistro.getTfCodigo().setFocusable(false);
-                    pnlRegistro.getTfNombre().setFocusable(true);
+                    pnlRegistro.getTfNif().setEditable(false);
+                    pnlRegistro.getTfNif().setFocusable(false);
                     CarFlaAct = 1;
                     operacion = 2;
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
                     statusLabel.setText("Estado: Modificar – Edita el registro seleccionado.");
-                    break;
-
-                case "Eliminar":
+                }
+                case "Eliminar" -> {
                     int filaE = pnlGrilla.getTable().getSelectedRow();
                     if (filaE < 0) {
                         JOptionPane.showMessageDialog(this, "Selecciona una fila para eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    String estadoE = pnlGrilla.getTable().getValueAt(filaE, 2).toString();
+                    String estadoE = pnlGrilla.getTable().getValueAt(filaE, 5).toString();
                     if ("*".equals(estadoE)) {
                         JOptionPane.showMessageDialog(this, "El registro ya está eliminado.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
@@ -113,15 +132,14 @@ public class ComponentesCiudad extends JFrame {
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
                     statusLabel.setText("Estado: Eliminar – Confirma para continuar.");
-                    break;
-
-                case "Inactivar":
+                }
+                case "Inactivar" -> {
                     int filaI = pnlGrilla.getTable().getSelectedRow();
                     if (filaI < 0) {
                         JOptionPane.showMessageDialog(this, "Selecciona una fila para inactivar.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    String estadoI = pnlGrilla.getTable().getValueAt(filaI, 2).toString();
+                    String estadoI = pnlGrilla.getTable().getValueAt(filaI, 5).toString();
                     if ("*".equals(estadoI) || "I".equals(estadoI)) {
                         JOptionPane.showMessageDialog(this, "Registro inválido para inactivar.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
@@ -135,15 +153,14 @@ public class ComponentesCiudad extends JFrame {
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
                     statusLabel.setText("Estado: Inactivar – Confirmar acción.");
-                    break;
-
-                case "Reactivar":
+                }
+                case "Reactivar" -> {
                     int filaR = pnlGrilla.getTable().getSelectedRow();
                     if (filaR < 0) {
                         JOptionPane.showMessageDialog(this, "Selecciona una fila para reactivar.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    String estadoR = pnlGrilla.getTable().getValueAt(filaR, 2).toString();
+                    String estadoR = pnlGrilla.getTable().getValueAt(filaR, 5).toString();
                     if ("A".equals(estadoR)) {
                         JOptionPane.showMessageDialog(this, "El registro ya está activo.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
@@ -157,41 +174,44 @@ public class ComponentesCiudad extends JFrame {
                     pnlBotones.activarModoEdicion();
                     pnlBotones.marcarActivo();
                     statusLabel.setText("Estado: Reactivar – Confirmar acción.");
-                    break;
-
-                case "Actualizar":
+                }
+                case "Actualizar" -> {
                     if (CarFlaAct != 1) return;
-                    String cod = pnlRegistro.getTfCodigo().getText().trim();
-                    String nom = pnlRegistro.getTfNombre().getText().trim();
-                    String reg = (String) pnlRegistro.getCbRegion().getSelectedItem();
+                    String nif = pnlRegistro.getTfNif().getText().trim();
+                    String nombre = pnlRegistro.getTfNombre().getText().trim();
+                    String ciudad = (String) pnlRegistro.getCbCiudad().getSelectedItem();
+                    String tipo = (String) pnlRegistro.getCbTipoTransporte().getSelectedItem();
+                    String observacion = pnlRegistro.getTfObservacion().getText().trim();
+                    String estado = pnlRegistro.getTfEstado().getText();
 
-                    if ((operacion == 1 || operacion == 2) && (cod.isEmpty() || nom.isEmpty() || reg == null)) {
-                        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    if ((operacion == 1 || operacion == 2) && (nif.isEmpty() || nombre.isEmpty() || ciudad == null || tipo == null)) {
+                        JOptionPane.showMessageDialog(this, "NIF, Nombre, Ciudad y Tipo son obligatorios.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     try {
                         switch (operacion) {
                             case 1:
-                                if (dao.findById(cod) != null) {
-                                    JOptionPane.showMessageDialog(this, "Código ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                if (dao.findById(nif) != null) {
+                                    JOptionPane.showMessageDialog(this, "NIF ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                                     return;
                                 }
-                                dao.insert(new CiudadModel(cod, nom, pnlRegistro.getTfEstado().getText(), reg));
+                                dao.insert(new TransportistaModel(nif, nombre, ciudad, tipo, estado, observacion));
                                 break;
                             case 2:
-                                dao.update(new CiudadModel(cod, nom, pnlRegistro.getTfEstado().getText(), reg));
+                                dao.update(new TransportistaModel(nif, nombre, ciudad, tipo, estado, observacion));
                                 break;
                             case 3:
-                                dao.softDelete(cod);
+                                dao.softDelete(nif);
                                 break;
                             case 4:
-                                dao.inactivate(cod);
+                                dao.inactivate(nif);
                                 break;
                             case 5:
-                                dao.reactivate(cod);
+                                dao.reactivate(nif);
                                 break;
                         }
+
                         cargarTabla();
                         pnlRegistro.limpiar();
                         CarFlaAct = 0;
@@ -199,53 +219,74 @@ public class ComponentesCiudad extends JFrame {
                         pnlBotones.marcarInactivo();
                         pnlBotones.activarModoNormal();
                         statusLabel.setText("Registro procesado exitosamente.");
-                    } catch (SQLException e) {
-                        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    break;
-
-                case "Cancelar":
+                }
+                case "Cancelar" -> {
                     pnlRegistro.limpiar();
                     CarFlaAct = 0;
                     operacion = 0;
                     pnlBotones.marcarInactivo();
                     pnlBotones.activarModoNormal();
                     statusLabel.setText("Operación cancelada.");
-                    break;
-
-                case "Salir":
+                }
+                case "Salir" -> {
                     dispose();
+                }
             }
         });
 
-        cargarComboRegiones();
+        cargarCombos();
         cargarTabla();
     }
 
     private void cargarTabla() {
         DefaultTableModel model = (DefaultTableModel) pnlGrilla.getTable().getModel();
         try {
-            List<CiudadModel> lista = dao.findAll();
+            List<TransportistaModel> lista = dao.findAll();
             model.setRowCount(0);
-            for (CiudadModel c : lista) {
-                model.addRow(new Object[]{ c.getCodigo(), c.getNombre(), c.getEstado(), c.getRegionCodigo() });
+
+            int totalRegistros = lista.size();
+            totalPaginas = (int) Math.ceil((double) totalRegistros / FILAS_POR_PAGINA);
+            if (totalPaginas == 0) totalPaginas = 1; // 👈 Esto asegura al menos una página
+
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+
+            int inicio = (paginaActual - 1) * FILAS_POR_PAGINA;
+            int fin = Math.min(inicio + FILAS_POR_PAGINA, totalRegistros);
+
+            for (int i = inicio; i < fin; i++) {
+                TransportistaModel t = lista.get(i);
+                model.addRow(new Object[]{
+                    t.getNif(), t.getNombre(), t.getCiudadCod(),
+                    t.getTipoCod(), t.getEstado(), t.getObservacion()
+                });
             }
+
+            statusLabel.setText(String.format("Página %d de %d", paginaActual, totalPaginas));
+            pnlBotones.actualizarLabelPagina("Página " + paginaActual + " de " + totalPaginas);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void cargarComboRegiones() {
+
+    private void cargarCombos() {
         try {
-            List<String> regiones = dao.getRegionesActivas();
-            JComboBox<String> combo = pnlRegistro.getCbRegion();
-            combo.removeAllItems();
-            for (String r : regiones) {
-                combo.addItem(r);
-            }
-            combo.setSelectedIndex(-1);
+            JComboBox<String> comboCiudad = pnlRegistro.getCbCiudad();
+            comboCiudad.removeAllItems();
+            for (String ciudad : dao.getCiudadesActivas()) comboCiudad.addItem(ciudad);
+            comboCiudad.setSelectedIndex(-1);
+
+            JComboBox<String> comboTipo = pnlRegistro.getCbTipoTransporte();
+            comboTipo.removeAllItems();
+            for (String tipo : dao.getTiposTransporteActivos()) comboTipo.addItem(tipo);
+            comboTipo.setSelectedIndex(-1);
+
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error cargando regiones: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error cargando combos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

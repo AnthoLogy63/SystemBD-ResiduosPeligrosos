@@ -224,7 +224,6 @@ public class ComponentesToxicidad extends JFrame {
                 }
 
                 case "Salir" -> {
-                    new MenuPrincipal().setVisible(true);
                     dispose();
                 }
             }

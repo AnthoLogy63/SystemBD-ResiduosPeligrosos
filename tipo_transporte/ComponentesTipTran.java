@@ -231,7 +231,6 @@ public class ComponentesTipTran extends JFrame {
                     break;
 
                 case "Salir":
-                    new MenuPrincipal().setVisible(true); // o como se llame tu menú
                     dispose();
             }
         });

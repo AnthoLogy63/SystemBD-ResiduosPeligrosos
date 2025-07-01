@@ -222,7 +222,6 @@ public class ComponentesCodigoResiduo extends JFrame {
                 }
 
                 case "Salir" -> {
-                    new MenuPrincipal().setVisible(true);
                     dispose();
                 }
             }

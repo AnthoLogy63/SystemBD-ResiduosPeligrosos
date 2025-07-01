@@ -197,7 +197,6 @@ public class ComponentesTratamiento extends JFrame {
                     statusLabel.setText("Acción cancelada.");
                 }
                 case "Salir" -> {
-                    new MenuPrincipal().setVisible(true);
                     dispose();
                 }
             }

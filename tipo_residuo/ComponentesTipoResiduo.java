@@ -187,7 +187,6 @@ public class ComponentesTipoResiduo extends JFrame {
                 }
                 
                 case "Salir" -> {
-                    new MenuPrincipal().setVisible(true);
                     dispose();
                 }
             }

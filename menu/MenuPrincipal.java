@@ -3,7 +3,7 @@ package menu;
 import javax.swing.*;
 import java.awt.*;
 
-// IMPORTS DE TUS COMPONENTES
+// IMPORTS – Tablas Referenciales
 import tipo_transporte.ComponentesTipTran;
 import envase.ComponentesEnvase;
 import ciudad.ComponentesCiudad;
@@ -13,38 +13,78 @@ import tratamiento.ComponentesTratamiento;
 import tipo_residuo.ComponentesTipoResiduo;
 import codigoresiduo.ComponentesCodigoResiduo;
 
+// IMPORTS – Tablas Maestras
+import empresa.ComponentesEmpresa;
+import transportista.ComponentesTransportista;
+import destino.ComponentesDestino;
+import residuo.ComponentesResiduo;
+import constituyente.ComponentesConstituyente;
+
+// IMPORTS – Tablas Operacionales
+import traslado.ComponentesTraslado;
+import rescons.ComponentesResCons;
+
 public class MenuPrincipal extends JFrame {
 
     public MenuPrincipal() {
         setTitle("Sistema de Gestión de Residuos Peligrosos");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(700, 600);
+        setSize(900, 750);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // ENCABEZADO
+        // TÍTULO
         JLabel titulo = new JLabel("Menú Principal", SwingConstants.CENTER);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        titulo.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titulo.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
         add(titulo, BorderLayout.NORTH);
 
-        // PANEL CENTRAL CON BOTONES
-        JPanel panelBotones = new JPanel(new GridLayout(5, 2, 20, 20));
-        panelBotones.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
-        panelBotones.setBackground(Color.WHITE);
+        JPanel contenedor = new JPanel();
+        contenedor.setLayout(new BoxLayout(contenedor, BoxLayout.Y_AXIS));
+        contenedor.setBackground(Color.WHITE);
 
-        panelBotones.add(crearBoton("TIPO DE TRANSPORTE", e -> new ComponentesTipTran().setVisible(true)));
-        panelBotones.add(crearBoton("ENVASE", e -> new ComponentesEnvase().setVisible(true)));
-        panelBotones.add(crearBoton("CIUDAD", e -> new ComponentesCiudad().setVisible(true)));
-        panelBotones.add(crearBoton("REGIÓN", e -> new ComponentesRegion().setVisible(true)));
-        panelBotones.add(crearBoton("TOXICIDAD", e -> new ComponentesToxicidad().setVisible(true)));
-        panelBotones.add(crearBoton("TRATAMIENTO", e -> new ComponentesTratamiento().setVisible(true)));
-        panelBotones.add(crearBoton("TIPO RESIDUO", e -> new ComponentesTipoResiduo().setVisible(true)));
-        panelBotones.add(crearBoton("CÓDIGO RESIDUO", e -> new ComponentesCodigoResiduo().setVisible(true)));
+        // TABLAS REFERENCIALES
+        contenedor.add(crearTituloSeccion("Tablas Referenciales"));
+        contenedor.add(crearPanelBotones(new String[]{
+            "Tipo Transporte", "Envase", "Ciudad", "Región",
+            "Toxicidad", "Tratamiento", "Tipo Residuo", "Código Residuo"
+        }, new Runnable[]{
+            () -> new ComponentesTipTran().setVisible(true),
+            () -> new ComponentesEnvase().setVisible(true),
+            () -> new ComponentesCiudad().setVisible(true),
+            () -> new ComponentesRegion().setVisible(true),
+            () -> new ComponentesToxicidad().setVisible(true),
+            () -> new ComponentesTratamiento().setVisible(true),
+            () -> new ComponentesTipoResiduo().setVisible(true),
+            () -> new ComponentesCodigoResiduo().setVisible(true)
+        }, 4));
 
-        add(panelBotones, BorderLayout.CENTER);
+        // TABLAS MAESTRAS
+        contenedor.add(crearTituloSeccion("Tablas Maestras"));
+        contenedor.add(crearPanelBotones(new String[]{
+            "Empresa", "Transportista", "Destino",
+            "Residuo", "Constituyente", "Res-Cons"
+        }, new Runnable[]{
+            () -> new ComponentesEmpresa().setVisible(true),
+            () -> new ComponentesTransportista().setVisible(true),
+            () -> new ComponentesDestino().setVisible(true),
+            () -> new ComponentesResiduo().setVisible(true),
+            () -> new ComponentesConstituyente().setVisible(true),
+            () -> new ComponentesResCons().setVisible(true)
+        }, 3));
 
-        // BOTÓN DE SALIDA
+        // TABLAS OPERACIONALES
+        contenedor.add(crearTituloSeccion("Tablas Operacionales"));
+        contenedor.add(crearPanelBotones(new String[]{
+            "Traslado"
+        }, new Runnable[]{
+            () -> new ComponentesTraslado().setVisible(true),
+            
+        }, 1));
+
+        add(contenedor, BorderLayout.CENTER);
+
+        // BOTÓN SALIR
         JButton salir = new JButton("Salir del sistema");
         salir.setFont(new Font("Segoe UI", Font.BOLD, 14));
         salir.setBackground(new Color(200, 60, 60));
@@ -59,14 +99,31 @@ public class MenuPrincipal extends JFrame {
         add(panelSur, BorderLayout.SOUTH);
     }
 
-    private JButton crearBoton(String texto, java.awt.event.ActionListener action) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        btn.setBackground(new Color(230, 240, 255));
-        btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        btn.addActionListener(action);
-        return btn;
+    private JLabel crearTituloSeccion(String texto) {
+        JLabel label = new JLabel(texto, SwingConstants.CENTER);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        label.setBorder(BorderFactory.createEmptyBorder(25, 10, 10, 10));
+        return label;
+    }
+
+    private JPanel crearPanelBotones(String[] textos, Runnable[] acciones, int columnas) {
+        JPanel panel = new JPanel(new GridLayout(0, columnas, 20, 20));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
+
+        for (int i = 0; i < textos.length; i++) {
+            JButton btn = new JButton(textos[i]);
+            btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            btn.setBackground(new Color(230, 240, 255));
+            btn.setPreferredSize(new Dimension(180, 40));
+            btn.setFocusPainted(false);
+            btn.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            int finalI = i;
+            btn.addActionListener(e -> acciones[finalI].run());
+            panel.add(btn);
+        }
+
+        return panel;
     }
 
     public static void main(String[] args) {
