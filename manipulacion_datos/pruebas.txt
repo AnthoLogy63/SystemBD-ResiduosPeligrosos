@@ -1,0 +1,60 @@
+-- ================================================
+-- CONSULTAS A VISTAS
+-- ================================================
+
+-- Mostrar datos de la vista: vista_empresa_residuos
+SELECT * FROM public.vista_empresa_residuos;
+
+-- Mostrar datos de la vista: vista_historial_traslados_detallado
+SELECT * FROM public.vista_historial_traslados_detallado;
+
+-- Mostrar datos de la vista: vista_info_completa_empresa
+SELECT * FROM public.vista_info_completa_empresa;
+
+-- Mostrar datos de la vista: vista_total_residuos_por_tipo_y_toxicidad
+SELECT * FROM public.vista_total_residuos_por_tipo_y_toxicidad;
+
+
+
+-- ================================================
+-- PRUEBAS DE TRIGGERS
+-- ================================================
+
+-- Trigger 1: Residuo altamente tóxico
+INSERT INTO public."R1T_RESIDUO" (
+  "ResCod", "EmpNif", "ResTox", "TipoResCod", "CodResNorm", "ResCant", "ResObs", "ResEst"
+) VALUES (
+  63, 'EMP000000001', 3, '03', 'R006', 15.00, 'Prueba para trigger tóxico', 'A'
+);
+
+
+
+
+-- Trigger 2: Traslado que supera umbral de capacidad
+INSERT INTO public."R1T_TRASLADO" (
+  "EmpNif", "ResCod", "TraFecEnv", "DestCod", "TraEnv", "TraFecLlega", "TraTart", "TraCant", "TraObs", "TransCod", "EstCod"
+) VALUES (
+  'EMP000000121', 1, '2024-08-11', 'D00000000003', '01', '2024-07-14', '02', 324.00, 'Prueba trigger 2 dentro del rango', 'EMP000000041', 'A'
+);
+
+
+
+-- Trigger 3: Código normativo inactivo
+INSERT INTO public."R1T_RESIDUO" (
+  "ResCod", "EmpNif", "ResTox", "TipoResCod", "CodResNorm", "ResCant", "ResObs", "ResEst"
+) VALUES (
+  64, 'EMP000000042', 2, '05', 'R005', 22.00, 'Prueba trigger 3 con código inactivo', 'A'
+);
+
+
+
+
+-- ================================================
+-- PROCEDIMIENTOS ALMACENADOS
+-- ================================================
+
+-- Diagnóstico completo por empresa
+CALL pa_diagnostico_empresa_completo('EMP000000001');
+
+-- Alerta de saturación de destinos
+CALL pa_alerta_saturacion_destinos();

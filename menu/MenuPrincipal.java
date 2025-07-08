@@ -24,6 +24,11 @@ import constituyente.ComponentesConstituyente;
 import traslado.ComponentesTraslado;
 import rescons.ComponentesResCons;
 
+// IMPORTS – Reportes y Procesos
+import manipulacion_datos.views.VistaPanelPrincipal;
+import manipulacion_datos.Triggers.VistaHistorialAdvertencias;
+import manipulacion_datos.PAlmacenados.PA_PanelPrincipal;
+
 public class MenuPrincipal extends JFrame {
 
     public MenuPrincipal() {
@@ -79,8 +84,17 @@ public class MenuPrincipal extends JFrame {
             "Traslado"
         }, new Runnable[]{
             () -> new ComponentesTraslado().setVisible(true),
-            
         }, 1));
+
+        // REPORTES Y PROCESOS
+        contenedor.add(crearTituloSeccion("Reportes y Procesos"));
+        contenedor.add(crearPanelBotones(new String[]{
+            "Vistas", "Logs de Triggers", "Procedimientos"
+        }, new Runnable[]{
+            this::mostrarVistas,
+            this::mostrarHistorialAdvertencias,
+            this::ejecutarProcedimientos
+        }, 3));
 
         add(contenedor, BorderLayout.CENTER);
 
@@ -100,9 +114,11 @@ public class MenuPrincipal extends JFrame {
     }
 
     private JLabel crearTituloSeccion(String texto) {
-        JLabel label = new JLabel(texto, SwingConstants.CENTER);
+        JLabel label = new JLabel(texto);
         label.setFont(new Font("Segoe UI", Font.BOLD, 20));
         label.setBorder(BorderFactory.createEmptyBorder(25, 10, 10, 10));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
 
@@ -124,6 +140,18 @@ public class MenuPrincipal extends JFrame {
         }
 
         return panel;
+    }
+
+    private void mostrarVistas() {
+        new VistaPanelPrincipal().setVisible(true);
+    }
+
+    private void ejecutarProcedimientos() {
+        new PA_PanelPrincipal().setVisible(true); // Ventana para ejecutar PA
+    }
+
+    private void mostrarHistorialAdvertencias() {
+        new VistaHistorialAdvertencias().setVisible(true);
     }
 
     public static void main(String[] args) {
