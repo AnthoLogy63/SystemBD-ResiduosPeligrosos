@@ -243,7 +243,19 @@ public class RegistroPanelDestino extends JPanel {
     public void cargarDesdeGrilla(JTable table, int fila) {
         tfCodigo.setText(table.getValueAt(fila, 0).toString());
         tfNombre.setText(table.getValueAt(fila, 1).toString());
-        cbCiudad.setSelectedItem(table.getValueAt(fila, 2).toString());
+        String ciudad = table.getValueAt(fila, 2).toString();
+        boolean encontrada = false;
+        for (int i = 0; i < cbCiudad.getItemCount(); i++) {
+            if (cbCiudad.getItemAt(i).equals(ciudad)) {
+                encontrada = true;
+                break;
+            }
+        }
+        if (!encontrada) {
+            cbCiudad.addItem(ciudad);  // Lo agrega temporalmente si no estaba
+        }
+        cbCiudad.setSelectedItem(ciudad);
+
         tfRegion.setText(table.getValueAt(fila, 3).toString());
         cbTipoResiduo.setSelectedItem(table.getValueAt(fila, 4).toString());
         tfCapacidad.setText(table.getValueAt(fila, 5).toString());
