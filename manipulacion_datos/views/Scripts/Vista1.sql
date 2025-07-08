@@ -1,3 +1,4 @@
+-- Vista que muestra los residuos generados por cada empresa, incluyendo su nombre, rubro y estado del residuo.
 CREATE OR REPLACE VIEW vista_empresa_residuos AS
 SELECT
     emp."EmpNif" AS "NIF_Empresa",

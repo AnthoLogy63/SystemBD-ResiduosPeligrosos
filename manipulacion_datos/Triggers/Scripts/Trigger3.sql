@@ -20,6 +20,6 @@ $$ LANGUAGE plpgsql;
 
 -- Trigger asociado a la tabla de residuos
 CREATE TRIGGER trg_residuo_con_codigo_inactivo
-BEFORE INSERT OR UPDATE ON public."R1T_RESIDUO"
+BEFORE INSERT ON public."R1T_RESIDUO"
 FOR EACH ROW
 EXECUTE FUNCTION advertencia_codigo_residuo_inactivo();

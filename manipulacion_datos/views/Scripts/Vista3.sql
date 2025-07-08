@@ -1,3 +1,4 @@
+-- Vista que muestra el total de residuos agrupados por tipo y nivel de toxicidad, junto con el número de empresas que los generaron.
 CREATE OR REPLACE VIEW vista_total_residuos_por_tipo_y_toxicidad AS
 SELECT
     tipo."TipoResNom" AS "Tipo_Residuo",

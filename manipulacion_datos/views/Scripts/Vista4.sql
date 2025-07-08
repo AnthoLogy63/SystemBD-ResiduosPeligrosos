@@ -1,3 +1,4 @@
+-- Vista que muestra los 30 traslados más recientes de residuos, incluyendo datos de la empresa, tipo de residuo, toxicidad, transportista y destino final.
 CREATE OR REPLACE VIEW vista_historial_traslados_detallado AS
 SELECT *
 FROM (

@@ -1,3 +1,4 @@
+-- Vista que muestra información general de cada empresa, incluyendo ciudad y región donde se ubica.
 CREATE OR REPLACE VIEW vista_info_completa_empresa AS
 SELECT
     emp."EmpNif" AS "NIF_Empresa",
