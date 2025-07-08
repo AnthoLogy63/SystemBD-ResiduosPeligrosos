@@ -180,18 +180,19 @@ public class RegistroPanelTraslado extends JPanel {
     }
 
     public void cargarDesdeGrilla(JTable table, int fila) {
-        cbEmpresa.setSelectedItem(table.getValueAt(fila, 0).toString());
+        cbEmpresa.setSelectedItem(table.getValueAt(fila, 0).toString().trim());
         cbResiduo.setSelectedItem(Integer.parseInt(table.getValueAt(fila, 1).toString()));
-        tfFechaEnvio.setText(table.getValueAt(fila, 2).toString());
-        cbDestino.setSelectedItem(table.getValueAt(fila, 3).toString());
-        cbEnvase.setSelectedItem(table.getValueAt(fila, 4).toString());
-        tfFechaLlegada.setText(table.getValueAt(fila, 5) == null ? "" : table.getValueAt(fila, 5).toString());
-        cbTratamiento.setSelectedItem(table.getValueAt(fila, 6).toString());
-        tfCantidad.setText(table.getValueAt(fila, 7).toString());
-        tfObservacion.setText(table.getValueAt(fila, 8) == null ? "" : table.getValueAt(fila, 8).toString());
-        cbTransportista.setSelectedItem(table.getValueAt(fila, 9).toString());
-        tfEstado.setText(table.getValueAt(fila, 10).toString());
+        tfFechaEnvio.setText(table.getValueAt(fila, 2).toString().trim());
+        cbDestino.setSelectedItem(table.getValueAt(fila, 3).toString().trim());
+        cbEnvase.setSelectedItem(table.getValueAt(fila, 4).toString().trim());
+        tfFechaLlegada.setText(table.getValueAt(fila, 5) == null ? "" : table.getValueAt(fila, 5).toString().trim());
+        cbTratamiento.setSelectedItem(table.getValueAt(fila, 6).toString().trim());
+        tfCantidad.setText(table.getValueAt(fila, 7).toString().trim());
+        tfObservacion.setText(table.getValueAt(fila, 8) == null ? "" : table.getValueAt(fila, 8).toString().trim());
+        cbTransportista.setSelectedItem(table.getValueAt(fila, 9).toString().trim());
+        tfEstado.setText(table.getValueAt(fila, 10).toString().trim());
     }
+
 
     public void limpiar() {
         cbEmpresa.setSelectedIndex(-1);
