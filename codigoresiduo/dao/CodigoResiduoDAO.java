@@ -1,7 +1,7 @@
 package codigoresiduo.dao;
 
 import codigoresiduo.modelo.CodigoResiduoModel;
-import src.DBConnection;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ public class CodigoResiduoDAO {
 
     public List<CodigoResiduoModel> findAll() throws SQLException {
         List<CodigoResiduoModel> lista = new ArrayList<>();
-        String sql = "SELECT \"CodResNorm\", \"CodResDesc\", \"CodResEst\" FROM public.\"GZZ_CODIGORESIDUO\" ORDER BY \"CodResNorm\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT CodResNorm, CodResDesc, CodResEst FROM GZZ_CODIGORESIDUO ORDER BY CodResNorm ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,8 +27,8 @@ public class CodigoResiduoDAO {
     }
 
     public void insert(CodigoResiduoModel c) throws SQLException {
-        String sql = "INSERT INTO public.\"GZZ_CODIGORESIDUO\" (\"CodResNorm\", \"CodResDesc\", \"CodResEst\") VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "INSERT INTO GZZ_CODIGORESIDUO (CodResNorm, CodResDesc, CodResEst) VALUES (?, ?, ?)";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, c.getCodigo());
             ps.setString(2, c.getDescripcion());
@@ -38,8 +38,8 @@ public class CodigoResiduoDAO {
     }
 
     public void update(CodigoResiduoModel c) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_CODIGORESIDUO\" SET \"CodResDesc\" = ?, \"CodResEst\" = ? WHERE \"CodResNorm\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_CODIGORESIDUO SET CodResDesc = ?, CodResEst = ? WHERE CodResNorm = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, c.getDescripcion());
             ps.setString(2, c.getEstado());
@@ -49,9 +49,9 @@ public class CodigoResiduoDAO {
     }
 
     public boolean softDelete(String codigo) throws SQLException {
-        String check = "SELECT \"CodResEst\" FROM public.\"GZZ_CODIGORESIDUO\" WHERE \"CodResNorm\" = ?";
-        String sql = "UPDATE public.\"GZZ_CODIGORESIDUO\" SET \"CodResEst\" = '*' WHERE \"CodResNorm\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT CodResEst FROM GZZ_CODIGORESIDUO WHERE CodResNorm = ?";
+        String sql = "UPDATE GZZ_CODIGORESIDUO SET CodResEst = '*' WHERE CodResNorm = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -68,9 +68,9 @@ public class CodigoResiduoDAO {
     }
 
     public boolean inactivate(String codigo) throws SQLException {
-        String check = "SELECT \"CodResEst\" FROM public.\"GZZ_CODIGORESIDUO\" WHERE \"CodResNorm\" = ?";
-        String sql = "UPDATE public.\"GZZ_CODIGORESIDUO\" SET \"CodResEst\" = 'I' WHERE \"CodResNorm\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT CodResEst FROM GZZ_CODIGORESIDUO WHERE CodResNorm = ?";
+        String sql = "UPDATE GZZ_CODIGORESIDUO SET CodResEst = 'I' WHERE CodResNorm = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -87,9 +87,9 @@ public class CodigoResiduoDAO {
     }
 
     public boolean reactivate(String codigo) throws SQLException {
-        String check = "SELECT \"CodResEst\" FROM public.\"GZZ_CODIGORESIDUO\" WHERE \"CodResNorm\" = ?";
-        String sql = "UPDATE public.\"GZZ_CODIGORESIDUO\" SET \"CodResEst\" = 'A' WHERE \"CodResNorm\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT CodResEst FROM GZZ_CODIGORESIDUO WHERE CodResNorm = ?";
+        String sql = "UPDATE GZZ_CODIGORESIDUO SET CodResEst = 'A' WHERE CodResNorm = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -106,8 +106,8 @@ public class CodigoResiduoDAO {
     }
 
     public CodigoResiduoModel findById(String codigo) throws SQLException {
-        String sql = "SELECT \"CodResNorm\", \"CodResDesc\", \"CodResEst\" FROM public.\"GZZ_CODIGORESIDUO\" WHERE \"CodResNorm\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT CodResNorm, CodResDesc, CodResEst FROM GZZ_CODIGORESIDUO WHERE CodResNorm = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             try (ResultSet rs = ps.executeQuery()) {

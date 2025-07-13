@@ -1,7 +1,7 @@
 package envase.dao;
 
 import envase.modelo.EnvaseModel;
-import src.DBConnection;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ public class EnvaseDAO {
 
     public List<EnvaseModel> findAll() throws SQLException {
         List<EnvaseModel> lista = new ArrayList<>();
-        String sql = "SELECT \"EnvCod\", \"EnvNom\", \"EnvEst\" FROM public.\"GZZ_ENVASE\" ORDER BY \"EnvCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT EnvCod, EnvNom, EnvEst FROM GZZ_ENVASE ORDER BY EnvCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,8 +27,8 @@ public class EnvaseDAO {
     }
 
     public void insert(EnvaseModel env) throws SQLException {
-        String sql = "INSERT INTO public.\"GZZ_ENVASE\" (\"EnvCod\", \"EnvNom\", \"EnvEst\") VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "INSERT INTO GZZ_ENVASE (EnvCod, EnvNom, EnvEst) VALUES (?, ?, ?)";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, env.getCodigo());
             ps.setString(2, env.getNombre());
@@ -38,8 +38,8 @@ public class EnvaseDAO {
     }
 
     public void update(EnvaseModel env) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_ENVASE\" SET \"EnvNom\" = ?, \"EnvEst\" = ? WHERE \"EnvCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_ENVASE SET EnvNom = ?, EnvEst = ? WHERE EnvCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, env.getNombre());
             ps.setString(2, env.getEstado());
@@ -49,9 +49,9 @@ public class EnvaseDAO {
     }
 
     public boolean softDelete(String codigo) throws SQLException {
-        String select = "SELECT \"EnvEst\" FROM public.\"GZZ_ENVASE\" WHERE \"EnvCod\" = ?";
-        String update = "UPDATE public.\"GZZ_ENVASE\" SET \"EnvEst\" = '*' WHERE \"EnvCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String select = "SELECT EnvEst FROM GZZ_ENVASE WHERE EnvCod = ?";
+        String update = "UPDATE GZZ_ENVASE SET EnvEst = '*' WHERE EnvCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(select)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -68,9 +68,9 @@ public class EnvaseDAO {
     }
 
     public boolean inactivate(String codigo) throws SQLException {
-        String select = "SELECT \"EnvEst\" FROM public.\"GZZ_ENVASE\" WHERE \"EnvCod\" = ?";
-        String update = "UPDATE public.\"GZZ_ENVASE\" SET \"EnvEst\" = 'I' WHERE \"EnvCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String select = "SELECT EnvEst FROM GZZ_ENVASE WHERE EnvCod = ?";
+        String update = "UPDATE GZZ_ENVASE SET EnvEst = 'I' WHERE EnvCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(select)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -87,9 +87,9 @@ public class EnvaseDAO {
     }
 
     public boolean reactivate(String codigo) throws SQLException {
-        String select = "SELECT \"EnvEst\" FROM public.\"GZZ_ENVASE\" WHERE \"EnvCod\" = ?";
-        String update = "UPDATE public.\"GZZ_ENVASE\" SET \"EnvEst\" = 'A' WHERE \"EnvCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String select = "SELECT EnvEst FROM GZZ_ENVASE WHERE EnvCod = ?";
+        String update = "UPDATE GZZ_ENVASE SET EnvEst = 'A' WHERE EnvCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(select)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -106,8 +106,8 @@ public class EnvaseDAO {
     }
 
     public EnvaseModel findById(String codigo) throws SQLException {
-        String sql = "SELECT \"EnvCod\", \"EnvNom\", \"EnvEst\" FROM public.\"GZZ_ENVASE\" WHERE \"EnvCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT EnvCod, EnvNom, EnvEst FROM GZZ_ENVASE WHERE EnvCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             try (ResultSet rs = ps.executeQuery()) {

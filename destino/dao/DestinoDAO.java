@@ -1,7 +1,7 @@
 package destino.dao;
 
 import destino.modelo.DestinoModel;
-import src.DBConnection;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,14 +12,14 @@ public class DestinoDAO {
     public List<DestinoModel> findAll() throws SQLException {
         List<DestinoModel> lista = new ArrayList<>();
         String sql = """
-            SELECT "DestCod", "DestNom", "DestCiu", "RegCod", "DestTipoResCod",
-                   "DestCapacidad", "DestCapUsada", "DestFecCierreEstim",
-                   "DestAviso", "DestEst", "DestObs"
-            FROM public."R1M_DESTINO"
-            ORDER BY "DestNom" ASC
+            SELECT DestCod, DestNom, DestCiu, RegCod, DestTipoResCod,
+                   DestCapacidad, DestCapUsada, DestFecCierreEstim,
+                   DestAviso, DestEst, DestObs
+            FROM R1M_DESTINO
+            ORDER BY DestNom ASC
         """;
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -42,9 +42,9 @@ public class DestinoDAO {
     }
 
     public DestinoModel findById(String cod) throws SQLException {
-        String sql = "SELECT * FROM public.\"R1M_DESTINO\" WHERE \"DestCod\" = ?";
+        String sql = "SELECT * FROM R1M_DESTINO WHERE DestCod = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, cod);
             try (ResultSet rs = ps.executeQuery()) {
@@ -70,14 +70,14 @@ public class DestinoDAO {
 
     public void insert(DestinoModel d) throws SQLException {
         String sql = """
-            INSERT INTO public."R1M_DESTINO"
-            ("DestCod", "DestNom", "DestCiu", "RegCod", "DestTipoResCod",
-             "DestCapacidad", "DestCapUsada", "DestFecCierreEstim",
-             "DestAviso", "DestEst", "DestObs")
+            INSERT INTO R1M_DESTINO
+            (DestCod, DestNom, DestCiu, RegCod, DestTipoResCod,
+             DestCapacidad, DestCapUsada, DestFecCierreEstim,
+             DestAviso, DestEst, DestObs)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, d.getCodigo());
             ps.setString(2, d.getNombre());
@@ -96,14 +96,14 @@ public class DestinoDAO {
 
     public void update(DestinoModel d) throws SQLException {
         String sql = """
-            UPDATE public."R1M_DESTINO" SET
-              "DestNom" = ?, "DestCiu" = ?, "RegCod" = ?, "DestTipoResCod" = ?,
-              "DestCapacidad" = ?, "DestCapUsada" = ?, "DestFecCierreEstim" = ?,
-              "DestAviso" = ?, "DestEst" = ?, "DestObs" = ?
-            WHERE "DestCod" = ?
+            UPDATE R1M_DESTINO SET
+              DestNom = ?, DestCiu = ?, RegCod = ?, DestTipoResCod = ?,
+              DestCapacidad = ?, DestCapUsada = ?, DestFecCierreEstim = ?,
+              DestAviso = ?, DestEst = ?, DestObs = ?
+            WHERE DestCod = ?
         """;
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, d.getNombre());
             ps.setString(2, d.getCiudadCod());
@@ -121,8 +121,8 @@ public class DestinoDAO {
     }
 
     public boolean softDelete(String codigo) throws SQLException {
-        String sql = "UPDATE public.\"R1M_DESTINO\" SET \"DestEst\" = '*' WHERE \"DestCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE R1M_DESTINO SET DestEst = '*' WHERE DestCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             return ps.executeUpdate() > 0;
@@ -130,8 +130,8 @@ public class DestinoDAO {
     }
 
     public boolean inactivate(String codigo) throws SQLException {
-        String sql = "UPDATE public.\"R1M_DESTINO\" SET \"DestEst\" = 'I' WHERE \"DestCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE R1M_DESTINO SET DestEst = 'I' WHERE DestCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             return ps.executeUpdate() > 0;
@@ -139,19 +139,18 @@ public class DestinoDAO {
     }
 
     public boolean reactivate(String codigo) throws SQLException {
-        String sql = "UPDATE public.\"R1M_DESTINO\" SET \"DestEst\" = 'A' WHERE \"DestCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE R1M_DESTINO SET DestEst = 'A' WHERE DestCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             return ps.executeUpdate() > 0;
         }
     }
 
-    // Combos: ciudades, regiones, tipos de residuo
     public List<String> getCiudadesActivas() throws SQLException {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT \"CiudCod\" FROM public.\"GZZ_CIUDAD\" WHERE \"CiudEst\" = 'A' ORDER BY \"CiudCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT CiudCod FROM GZZ_CIUDAD WHERE CiudEst = 'A' ORDER BY CiudCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) list.add(rs.getString(1));
@@ -161,8 +160,8 @@ public class DestinoDAO {
 
     public List<String> getRegionesActivas() throws SQLException {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT \"RegCod\" FROM public.\"GZZ_REGION\" ORDER BY \"RegCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT RegCod FROM GZZ_REGION ORDER BY RegCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) list.add(rs.getString(1));
@@ -172,18 +171,19 @@ public class DestinoDAO {
 
     public List<String> getTiposResiduosActivos() throws SQLException {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT \"TipoResCod\" FROM public.\"GZZ_TIPORESIDUO\" ORDER BY \"TipoResCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT TipoResCod FROM GZZ_TIPORESIDUO ORDER BY TipoResCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) list.add(rs.getString(1));
         }
         return list;
     }
+
     public String getRegionByCiudad(String ciudadCod) throws SQLException {
-        String sql = "SELECT \"RegCod\" FROM public.\"GZZ_CIUDAD\" WHERE \"CiudCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT RegCod FROM GZZ_CIUDAD WHERE CiudCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, ciudadCod);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -193,15 +193,15 @@ public class DestinoDAO {
         }
         return null;
     }
+
     public double obtenerCapacidadDestino(String destCod) throws SQLException {
-        String sql = "SELECT \"DestCapacidad\" FROM public.\"R1M_DESTINO\" WHERE \"DestCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT DestCapacidad FROM R1M_DESTINO WHERE DestCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, destCod);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getDouble(1) : 0.0;
             }
         }
     }
-
 }

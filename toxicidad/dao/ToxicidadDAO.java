@@ -1,19 +1,18 @@
 package toxicidad.dao;
 
 import toxicidad.modelo.ToxicidadModel;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import src.DBConnection;
-
 public class ToxicidadDAO {
 
     public List<ToxicidadModel> findAll() throws SQLException {
         List<ToxicidadModel> lista = new ArrayList<>();
-        String sql = "SELECT \"ToxCod\", \"ToxNom\", \"ToxEst\" FROM public.\"GZZ_TOXICIDAD\" ORDER BY \"ToxCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT ToxCod, ToxNom, ToxEst FROM GZZ_TOXICIDAD ORDER BY ToxCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -28,8 +27,8 @@ public class ToxicidadDAO {
     }
 
     public void insert(ToxicidadModel tox) throws SQLException {
-        String sql = "INSERT INTO public.\"GZZ_TOXICIDAD\" (\"ToxCod\", \"ToxNom\", \"ToxEst\") VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "INSERT INTO GZZ_TOXICIDAD (ToxCod, ToxNom, ToxEst) VALUES (?, ?, ?)";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, tox.getCodigo());
             ps.setString(2, tox.getNombre());
@@ -39,8 +38,8 @@ public class ToxicidadDAO {
     }
 
     public void update(ToxicidadModel tox) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_TOXICIDAD\" SET \"ToxNom\" = ?, \"ToxEst\" = ? WHERE \"ToxCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_TOXICIDAD SET ToxNom = ?, ToxEst = ? WHERE ToxCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tox.getNombre());
             ps.setString(2, tox.getEstado());
@@ -50,8 +49,8 @@ public class ToxicidadDAO {
     }
 
     public void softDelete(int codigo) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_TOXICIDAD\" SET \"ToxEst\" = '*' WHERE \"ToxCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_TOXICIDAD SET ToxEst = '*' WHERE ToxCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, codigo);
             ps.executeUpdate();
@@ -59,8 +58,8 @@ public class ToxicidadDAO {
     }
 
     public void inactivate(int codigo) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_TOXICIDAD\" SET \"ToxEst\" = 'I' WHERE \"ToxCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_TOXICIDAD SET ToxEst = 'I' WHERE ToxCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, codigo);
             ps.executeUpdate();
@@ -68,8 +67,8 @@ public class ToxicidadDAO {
     }
 
     public void reactivate(int codigo) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_TOXICIDAD\" SET \"ToxEst\" = 'A' WHERE \"ToxCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_TOXICIDAD SET ToxEst = 'A' WHERE ToxCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, codigo);
             ps.executeUpdate();
@@ -77,8 +76,8 @@ public class ToxicidadDAO {
     }
 
     public ToxicidadModel findById(int codigo) throws SQLException {
-        String sql = "SELECT \"ToxCod\", \"ToxNom\", \"ToxEst\" FROM public.\"GZZ_TOXICIDAD\" WHERE \"ToxCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT ToxCod, ToxNom, ToxEst FROM GZZ_TOXICIDAD WHERE ToxCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, codigo);
             try (ResultSet rs = ps.executeQuery()) {

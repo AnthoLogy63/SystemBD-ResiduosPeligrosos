@@ -1,7 +1,7 @@
 package constituyente.dao;
 
 import constituyente.modelo.ConstituyenteModel;
-import src.DBConnection;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,9 +11,9 @@ public class ConstituyenteDAO {
 
     public List<ConstituyenteModel> findAll() throws SQLException {
         List<ConstituyenteModel> lista = new ArrayList<>();
-        String sql = "SELECT \"ConCod\", \"ConNom\", \"ConObs\", \"ConEst\" FROM public.\"R1Z_CONSTITUYENTE\" ORDER BY \"ConCod\" ASC";
+        String sql = "SELECT ConCod, ConNom, ConObs, ConEst FROM R1Z_CONSTITUYENTE ORDER BY ConCod ASC";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -30,9 +30,9 @@ public class ConstituyenteDAO {
     }
 
     public ConstituyenteModel findById(int cod) throws SQLException {
-        String sql = "SELECT \"ConCod\", \"ConNom\", \"ConObs\", \"ConEst\" FROM public.\"R1Z_CONSTITUYENTE\" WHERE \"ConCod\" = ?";
+        String sql = "SELECT ConCod, ConNom, ConObs, ConEst FROM R1Z_CONSTITUYENTE WHERE ConCod = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, cod);
@@ -51,9 +51,9 @@ public class ConstituyenteDAO {
     }
 
     public void insert(ConstituyenteModel c) throws SQLException {
-        String sql = "INSERT INTO public.\"R1Z_CONSTITUYENTE\" (\"ConCod\", \"ConNom\", \"ConObs\", \"ConEst\") VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO R1Z_CONSTITUYENTE (ConCod, ConNom, ConObs, ConEst) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, c.getCodigo());
@@ -65,9 +65,9 @@ public class ConstituyenteDAO {
     }
 
     public void update(ConstituyenteModel c) throws SQLException {
-        String sql = "UPDATE public.\"R1Z_CONSTITUYENTE\" SET \"ConNom\" = ?, \"ConObs\" = ?, \"ConEst\" = ? WHERE \"ConCod\" = ?";
+        String sql = "UPDATE R1Z_CONSTITUYENTE SET ConNom = ?, ConObs = ?, ConEst = ? WHERE ConCod = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, c.getNombre());
@@ -79,10 +79,10 @@ public class ConstituyenteDAO {
     }
 
     public boolean softDelete(int cod) throws SQLException {
-        String sqlCheck = "SELECT \"ConEst\" FROM public.\"R1Z_CONSTITUYENTE\" WHERE \"ConCod\" = ?";
-        String sqlUpdate = "UPDATE public.\"R1Z_CONSTITUYENTE\" SET \"ConEst\" = '*' WHERE \"ConCod\" = ?";
+        String sqlCheck = "SELECT ConEst FROM R1Z_CONSTITUYENTE WHERE ConCod = ?";
+        String sqlUpdate = "UPDATE R1Z_CONSTITUYENTE SET ConEst = '*' WHERE ConCod = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(sqlCheck)) {
 
             ps1.setInt(1, cod);
@@ -101,10 +101,10 @@ public class ConstituyenteDAO {
     }
 
     public boolean inactivate(int cod) throws SQLException {
-        String sqlCheck = "SELECT \"ConEst\" FROM public.\"R1Z_CONSTITUYENTE\" WHERE \"ConCod\" = ?";
-        String sqlUpdate = "UPDATE public.\"R1Z_CONSTITUYENTE\" SET \"ConEst\" = 'I' WHERE \"ConCod\" = ?";
+        String sqlCheck = "SELECT ConEst FROM R1Z_CONSTITUYENTE WHERE ConCod = ?";
+        String sqlUpdate = "UPDATE R1Z_CONSTITUYENTE SET ConEst = 'I' WHERE ConCod = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(sqlCheck)) {
 
             ps1.setInt(1, cod);
@@ -123,10 +123,10 @@ public class ConstituyenteDAO {
     }
 
     public boolean reactivate(int cod) throws SQLException {
-        String sqlCheck = "SELECT \"ConEst\" FROM public.\"R1Z_CONSTITUYENTE\" WHERE \"ConCod\" = ?";
-        String sqlUpdate = "UPDATE public.\"R1Z_CONSTITUYENTE\" SET \"ConEst\" = 'A' WHERE \"ConCod\" = ?";
+        String sqlCheck = "SELECT ConEst FROM R1Z_CONSTITUYENTE WHERE ConCod = ?";
+        String sqlUpdate = "UPDATE R1Z_CONSTITUYENTE SET ConEst = 'A' WHERE ConCod = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(sqlCheck)) {
 
             ps1.setInt(1, cod);

@@ -1,7 +1,7 @@
 package transportista.dao;
 
 import transportista.modelo.TransportistaModel;
-import src.DBConnection;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ public class TransportistaDAO {
 
     public List<TransportistaModel> findAll() throws SQLException {
         List<TransportistaModel> lista = new ArrayList<>();
-        String sql = "SELECT \"EmpTransNif\", \"EmpTransNom\", \"EmpTransCiu\", \"EmpTransTip\", \"EmpTransEst\", \"EmpTransObs\" " +
-                     "FROM public.\"R1M_TRANSPORTISTA\" ORDER BY \"EmpTransNom\" ASC";
+        String sql = "SELECT EmpTransNif, EmpTransNom, EmpTransCiu, EmpTransTip, EmpTransEst, EmpTransObs " +
+                     "FROM R1M_TRANSPORTISTA ORDER BY EmpTransNom ASC";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -34,10 +34,10 @@ public class TransportistaDAO {
     }
 
     public TransportistaModel findById(String nif) throws SQLException {
-        String sql = "SELECT \"EmpTransNif\", \"EmpTransNom\", \"EmpTransCiu\", \"EmpTransTip\", \"EmpTransEst\", \"EmpTransObs\" " +
-                     "FROM public.\"R1M_TRANSPORTISTA\" WHERE \"EmpTransNif\" = ?";
+        String sql = "SELECT EmpTransNif, EmpTransNom, EmpTransCiu, EmpTransTip, EmpTransEst, EmpTransObs " +
+                     "FROM R1M_TRANSPORTISTA WHERE EmpTransNif = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nif);
             try (ResultSet rs = ps.executeQuery()) {
@@ -58,11 +58,11 @@ public class TransportistaDAO {
     }
 
     public void insert(TransportistaModel t) throws SQLException {
-        String sql = "INSERT INTO public.\"R1M_TRANSPORTISTA\" " +
-                     "(\"EmpTransNif\", \"EmpTransNom\", \"EmpTransCiu\", \"EmpTransTip\", \"EmpTransEst\", \"EmpTransObs\") " +
+        String sql = "INSERT INTO R1M_TRANSPORTISTA " +
+                     "(EmpTransNif, EmpTransNom, EmpTransCiu, EmpTransTip, EmpTransEst, EmpTransObs) " +
                      "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, t.getNif());
             ps.setString(2, t.getNombre());
@@ -75,11 +75,11 @@ public class TransportistaDAO {
     }
 
     public void update(TransportistaModel t) throws SQLException {
-        String sql = "UPDATE public.\"R1M_TRANSPORTISTA\" SET " +
-                     "\"EmpTransNom\" = ?, \"EmpTransCiu\" = ?, \"EmpTransTip\" = ?, \"EmpTransEst\" = ?, \"EmpTransObs\" = ? " +
-                     "WHERE \"EmpTransNif\" = ?";
+        String sql = "UPDATE R1M_TRANSPORTISTA SET " +
+                     "EmpTransNom = ?, EmpTransCiu = ?, EmpTransTip = ?, EmpTransEst = ?, EmpTransObs = ? " +
+                     "WHERE EmpTransNif = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, t.getNombre());
             ps.setString(2, t.getCiudadCod());
@@ -92,9 +92,9 @@ public class TransportistaDAO {
     }
 
     public boolean softDelete(String nif) throws SQLException {
-        String sqlCheck = "SELECT \"EmpTransEst\" FROM public.\"R1M_TRANSPORTISTA\" WHERE \"EmpTransNif\" = ?";
-        String sqlDelete = "UPDATE public.\"R1M_TRANSPORTISTA\" SET \"EmpTransEst\" = '*' WHERE \"EmpTransNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sqlCheck = "SELECT EmpTransEst FROM R1M_TRANSPORTISTA WHERE EmpTransNif = ?";
+        String sqlDelete = "UPDATE R1M_TRANSPORTISTA SET EmpTransEst = '*' WHERE EmpTransNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(sqlCheck)) {
             ps1.setString(1, nif);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -111,9 +111,9 @@ public class TransportistaDAO {
     }
 
     public boolean inactivate(String nif) throws SQLException {
-        String sqlCheck = "SELECT \"EmpTransEst\" FROM public.\"R1M_TRANSPORTISTA\" WHERE \"EmpTransNif\" = ?";
-        String sqlUpdate = "UPDATE public.\"R1M_TRANSPORTISTA\" SET \"EmpTransEst\" = 'I' WHERE \"EmpTransNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sqlCheck = "SELECT EmpTransEst FROM R1M_TRANSPORTISTA WHERE EmpTransNif = ?";
+        String sqlUpdate = "UPDATE R1M_TRANSPORTISTA SET EmpTransEst = 'I' WHERE EmpTransNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(sqlCheck)) {
             ps1.setString(1, nif);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -130,9 +130,9 @@ public class TransportistaDAO {
     }
 
     public boolean reactivate(String nif) throws SQLException {
-        String sqlCheck = "SELECT \"EmpTransEst\" FROM public.\"R1M_TRANSPORTISTA\" WHERE \"EmpTransNif\" = ?";
-        String sqlUpdate = "UPDATE public.\"R1M_TRANSPORTISTA\" SET \"EmpTransEst\" = 'A' WHERE \"EmpTransNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sqlCheck = "SELECT EmpTransEst FROM R1M_TRANSPORTISTA WHERE EmpTransNif = ?";
+        String sqlUpdate = "UPDATE R1M_TRANSPORTISTA SET EmpTransEst = 'A' WHERE EmpTransNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(sqlCheck)) {
             ps1.setString(1, nif);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -148,11 +148,10 @@ public class TransportistaDAO {
         }
     }
 
-    // Métodos para combos
     public List<String> getCiudadesActivas() throws SQLException {
         List<String> ciudades = new ArrayList<>();
-        String sql = "SELECT \"CiudCod\" FROM public.\"GZZ_CIUDAD\" WHERE \"CiudEst\" = 'A' ORDER BY \"CiudCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT CiudCod FROM GZZ_CIUDAD WHERE CiudEst = 'A' ORDER BY CiudCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -164,8 +163,8 @@ public class TransportistaDAO {
 
     public List<String> getTiposTransporteActivos() throws SQLException {
         List<String> tipos = new ArrayList<>();
-        String sql = "SELECT \"TipTransCod\" FROM public.\"GZZ_TIPOTRANSPORTE\" WHERE \"TipTransEst\" = 'A' ORDER BY \"TipTransCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT TipTransCod FROM GZZ_TIPOTRANSPORTE WHERE TipTransEst = 'A' ORDER BY TipTransCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {

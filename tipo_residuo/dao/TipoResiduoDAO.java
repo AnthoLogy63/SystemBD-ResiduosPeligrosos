@@ -1,19 +1,18 @@
 package tipo_residuo.dao;
 
 import tipo_residuo.modelo.TipoResiduoModel;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import src.DBConnection;
-
 public class TipoResiduoDAO {
 
     public List<TipoResiduoModel> findAll() throws SQLException {
         List<TipoResiduoModel> lista = new ArrayList<>();
-        String sql = "SELECT \"TipoResCod\", \"TipoResNom\", \"TipoResEst\" FROM public.\"GZZ_TIPORESIDUO\" ORDER BY \"TipoResCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT TipoResCod, TipoResNom, TipoResEst FROM GZZ_TIPORESIDUO ORDER BY TipoResCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -28,8 +27,8 @@ public class TipoResiduoDAO {
     }
 
     public void insert(TipoResiduoModel t) throws SQLException {
-        String sql = "INSERT INTO public.\"GZZ_TIPORESIDUO\" (\"TipoResCod\", \"TipoResNom\", \"TipoResEst\") VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "INSERT INTO GZZ_TIPORESIDUO (TipoResCod, TipoResNom, TipoResEst) VALUES (?, ?, ?)";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, t.getCodigo());
             ps.setString(2, t.getNombre());
@@ -39,8 +38,8 @@ public class TipoResiduoDAO {
     }
 
     public void update(TipoResiduoModel t) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_TIPORESIDUO\" SET \"TipoResNom\" = ?, \"TipoResEst\" = ? WHERE \"TipoResCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_TIPORESIDUO SET TipoResNom = ?, TipoResEst = ? WHERE TipoResCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, t.getNombre());
             ps.setString(2, t.getEstado());
@@ -50,9 +49,9 @@ public class TipoResiduoDAO {
     }
 
     public boolean softDelete(String codigo) throws SQLException {
-        String check = "SELECT \"TipoResEst\" FROM public.\"GZZ_TIPORESIDUO\" WHERE \"TipoResCod\" = ?";
-        String sql = "UPDATE public.\"GZZ_TIPORESIDUO\" SET \"TipoResEst\" = '*' WHERE \"TipoResCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT TipoResEst FROM GZZ_TIPORESIDUO WHERE TipoResCod = ?";
+        String sql = "UPDATE GZZ_TIPORESIDUO SET TipoResEst = '*' WHERE TipoResCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -69,9 +68,9 @@ public class TipoResiduoDAO {
     }
 
     public boolean inactivate(String codigo) throws SQLException {
-        String check = "SELECT \"TipoResEst\" FROM public.\"GZZ_TIPORESIDUO\" WHERE \"TipoResCod\" = ?";
-        String sql = "UPDATE public.\"GZZ_TIPORESIDUO\" SET \"TipoResEst\" = 'I' WHERE \"TipoResCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT TipoResEst FROM GZZ_TIPORESIDUO WHERE TipoResCod = ?";
+        String sql = "UPDATE GZZ_TIPORESIDUO SET TipoResEst = 'I' WHERE TipoResCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -88,9 +87,9 @@ public class TipoResiduoDAO {
     }
 
     public boolean reactivate(String codigo) throws SQLException {
-        String check = "SELECT \"TipoResEst\" FROM public.\"GZZ_TIPORESIDUO\" WHERE \"TipoResCod\" = ?";
-        String sql = "UPDATE public.\"GZZ_TIPORESIDUO\" SET \"TipoResEst\" = 'A' WHERE \"TipoResCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT TipoResEst FROM GZZ_TIPORESIDUO WHERE TipoResCod = ?";
+        String sql = "UPDATE GZZ_TIPORESIDUO SET TipoResEst = 'A' WHERE TipoResCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, codigo);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -107,8 +106,8 @@ public class TipoResiduoDAO {
     }
 
     public TipoResiduoModel findById(String codigo) throws SQLException {
-        String sql = "SELECT \"TipoResCod\", \"TipoResNom\", \"TipoResEst\" FROM public.\"GZZ_TIPORESIDUO\" WHERE \"TipoResCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT TipoResCod, TipoResNom, TipoResEst FROM GZZ_TIPORESIDUO WHERE TipoResCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             try (ResultSet rs = ps.executeQuery()) {
