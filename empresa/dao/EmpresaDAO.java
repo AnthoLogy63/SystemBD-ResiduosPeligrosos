@@ -1,20 +1,18 @@
 package empresa.dao;
 
 import empresa.modelo.EmpresaModel;
-import src.DBConnection;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import ciudad.dao.CiudadDAO;
-
 public class EmpresaDAO {
 
     public List<EmpresaModel> findAll() throws SQLException {
         List<EmpresaModel> lista = new ArrayList<>();
-        String sql = "SELECT \"EmpNif\", \"EmpNom\", \"EmpCiu\", \"EmpAct\", \"EmpObs\", \"EmpEst\" FROM public.\"R1M_EMPRESA\" ORDER BY \"EmpNom\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT EmpNif, EmpNom, EmpCiu, EmpAct, EmpObs, EmpEst FROM R1M_EMPRESA ORDER BY EmpNom ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -32,8 +30,8 @@ public class EmpresaDAO {
     }
 
     public EmpresaModel findById(String nif) throws SQLException {
-        String sql = "SELECT \"EmpNif\", \"EmpNom\", \"EmpCiu\", \"EmpAct\", \"EmpObs\", \"EmpEst\" FROM public.\"R1M_EMPRESA\" WHERE \"EmpNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT EmpNif, EmpNom, EmpCiu, EmpAct, EmpObs, EmpEst FROM R1M_EMPRESA WHERE EmpNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nif);
             try (ResultSet rs = ps.executeQuery()) {
@@ -53,8 +51,8 @@ public class EmpresaDAO {
     }
 
     public void insert(EmpresaModel e) throws SQLException {
-        String sql = "INSERT INTO public.\"R1M_EMPRESA\" (\"EmpNif\", \"EmpNom\", \"EmpCiu\", \"EmpAct\", \"EmpObs\", \"EmpEst\") VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "INSERT INTO R1M_EMPRESA (EmpNif, EmpNom, EmpCiu, EmpAct, EmpObs, EmpEst) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, e.getNif());
             ps.setString(2, e.getNombre());
@@ -67,8 +65,8 @@ public class EmpresaDAO {
     }
 
     public void update(EmpresaModel e) throws SQLException {
-        String sql = "UPDATE public.\"R1M_EMPRESA\" SET \"EmpNom\" = ?, \"EmpCiu\" = ?, \"EmpAct\" = ?, \"EmpObs\" = ?, \"EmpEst\" = ? WHERE \"EmpNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE R1M_EMPRESA SET EmpNom = ?, EmpCiu = ?, EmpAct = ?, EmpObs = ?, EmpEst = ? WHERE EmpNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, e.getNombre());
             ps.setString(2, e.getCiudadCod());
@@ -81,9 +79,9 @@ public class EmpresaDAO {
     }
 
     public boolean softDelete(String nif) throws SQLException {
-        String check = "SELECT \"EmpEst\" FROM public.\"R1M_EMPRESA\" WHERE \"EmpNif\" = ?";
-        String sql = "UPDATE public.\"R1M_EMPRESA\" SET \"EmpEst\" = '*' WHERE \"EmpNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT EmpEst FROM R1M_EMPRESA WHERE EmpNif = ?";
+        String sql = "UPDATE R1M_EMPRESA SET EmpEst = '*' WHERE EmpNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, nif);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -100,9 +98,9 @@ public class EmpresaDAO {
     }
 
     public boolean inactivate(String nif) throws SQLException {
-        String check = "SELECT \"EmpEst\" FROM public.\"R1M_EMPRESA\" WHERE \"EmpNif\" = ?";
-        String sql = "UPDATE public.\"R1M_EMPRESA\" SET \"EmpEst\" = 'I' WHERE \"EmpNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT EmpEst FROM R1M_EMPRESA WHERE EmpNif = ?";
+        String sql = "UPDATE R1M_EMPRESA SET EmpEst = 'I' WHERE EmpNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, nif);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -119,9 +117,9 @@ public class EmpresaDAO {
     }
 
     public boolean reactivate(String nif) throws SQLException {
-        String check = "SELECT \"EmpEst\" FROM public.\"R1M_EMPRESA\" WHERE \"EmpNif\" = ?";
-        String sql = "UPDATE public.\"R1M_EMPRESA\" SET \"EmpEst\" = 'A' WHERE \"EmpNif\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String check = "SELECT EmpEst FROM R1M_EMPRESA WHERE EmpNif = ?";
+        String sql = "UPDATE R1M_EMPRESA SET EmpEst = 'A' WHERE EmpNif = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps1 = conn.prepareStatement(check)) {
             ps1.setString(1, nif);
             try (ResultSet rs = ps1.executeQuery()) {
@@ -136,17 +134,18 @@ public class EmpresaDAO {
             }
         }
     }
+
     public List<String> getCiudadesActivas() throws SQLException {
         List<String> ciudades = new ArrayList<>();
-        String sql = "SELECT \"CiudCod\" FROM public.\"GZZ_CIUDAD\" WHERE \"CiudEst\" = 'A' ORDER BY \"CiudCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT CiudCod FROM GZZ_CIUDAD WHERE CiudEst = 'A' ORDER BY CiudCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 ciudades.add(rs.getString("CiudCod"));
             }
         }
         return ciudades;
     }
-    
+
 }
