@@ -1,7 +1,7 @@
 package ciudad.dao;
 
 import ciudad.modelo.CiudadModel;
-import src.DBConnection;
+import src.DBConnectionMySQL;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,9 +11,8 @@ public class CiudadDAO {
 
     public List<CiudadModel> findAll() throws SQLException {
         List<CiudadModel> lista = new ArrayList<>();
-        String sql = "SELECT \"CiudCod\", \"CiudNom\", \"CiudEst\", \"RegCod\" " +
-                     "FROM public.\"GZZ_CIUDAD\" ORDER BY \"CiudCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT CiudCod, CiudNom, CiudEst, RegCod FROM GZZ_CIUDAD ORDER BY CiudCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -29,9 +28,8 @@ public class CiudadDAO {
     }
 
     public CiudadModel findById(String codigo) throws SQLException {
-        String sql = "SELECT \"CiudCod\", \"CiudNom\", \"CiudEst\", \"RegCod\" " +
-                     "FROM public.\"GZZ_CIUDAD\" WHERE \"CiudCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT CiudCod, CiudNom, CiudEst, RegCod FROM GZZ_CIUDAD WHERE CiudCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             try (ResultSet rs = ps.executeQuery()) {
@@ -49,8 +47,8 @@ public class CiudadDAO {
     }
 
     public void insert(CiudadModel ciudad) throws SQLException {
-        String sql = "INSERT INTO public.\"GZZ_CIUDAD\" (\"CiudCod\", \"CiudNom\", \"CiudEst\", \"RegCod\") VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "INSERT INTO GZZ_CIUDAD (CiudCod, CiudNom, CiudEst, RegCod) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, ciudad.getCodigo());
             ps.setString(2, ciudad.getNombre());
@@ -61,8 +59,8 @@ public class CiudadDAO {
     }
 
     public void update(CiudadModel ciudad) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_CIUDAD\" SET \"CiudNom\" = ?, \"CiudEst\" = ?, \"RegCod\" = ? WHERE \"CiudCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_CIUDAD SET CiudNom = ?, CiudEst = ?, RegCod = ? WHERE CiudCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, ciudad.getNombre());
             ps.setString(2, ciudad.getEstado());
@@ -73,8 +71,8 @@ public class CiudadDAO {
     }
 
     public boolean softDelete(String codigo) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_CIUDAD\" SET \"CiudEst\" = '*' WHERE \"CiudCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_CIUDAD SET CiudEst = '*' WHERE CiudCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             return ps.executeUpdate() > 0;
@@ -82,8 +80,8 @@ public class CiudadDAO {
     }
 
     public boolean inactivate(String codigo) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_CIUDAD\" SET \"CiudEst\" = 'I' WHERE \"CiudCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_CIUDAD SET CiudEst = 'I' WHERE CiudCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             return ps.executeUpdate() > 0;
@@ -91,8 +89,8 @@ public class CiudadDAO {
     }
 
     public boolean reactivate(String codigo) throws SQLException {
-        String sql = "UPDATE public.\"GZZ_CIUDAD\" SET \"CiudEst\" = 'A' WHERE \"CiudCod\" = ?";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "UPDATE GZZ_CIUDAD SET CiudEst = 'A' WHERE CiudCod = ?";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);
             return ps.executeUpdate() > 0;
@@ -101,8 +99,8 @@ public class CiudadDAO {
 
     public List<String> getRegionesActivas() throws SQLException {
         List<String> regiones = new ArrayList<>();
-        String sql = "SELECT \"RegCod\" FROM public.\"GZZ_REGION\" WHERE \"RegEst\" = 'A' ORDER BY \"RegCod\" ASC";
-        try (Connection conn = DBConnection.getConnection();
+        String sql = "SELECT RegCod FROM GZZ_REGION WHERE RegEst = 'A' ORDER BY RegCod ASC";
+        try (Connection conn = DBConnectionMySQL.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
