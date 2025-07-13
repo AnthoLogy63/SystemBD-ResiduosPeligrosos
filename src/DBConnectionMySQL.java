@@ -4,16 +4,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DBConnection {
-    private static final String URL = "jdbc:postgresql://localhost:5432/ResToxicos";
-    private static final String USUARIO = "postgres";
-    private static final String PASSWORD = "123456";
+public class DBConnectionMySQL {
+    // Cambia el nombre de la base si es diferente en tu servidor MySQL
+    private static final String URL = "jdbc:mysql://localhost:3306/ResToxicos?serverTimezone=UTC";
+    private static final String USUARIO = "root"; // o tu usuario
+    private static final String PASSWORD = "123456"; // o tu contraseña
 
     static {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            System.err.println("Driver PostgreSQL no encontrado: " + e.getMessage());
+            System.err.println("Driver MySQL no encontrado: " + e.getMessage());
         }
     }
 
