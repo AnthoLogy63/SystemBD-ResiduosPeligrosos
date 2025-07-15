@@ -7,14 +7,14 @@ import java.sql.*;
 
 public class VProcedimientoResultado extends JFrame {
 
-    public VProcedimientoResultado(String nombreFuncion, String parametro, Connection conn) {
-        setTitle("Resultado del procedimiento: " + nombreFuncion);
+    public VProcedimientoResultado(String nombreProcedimiento, String parametro, Connection conn) {
+        setTitle("Resultado del procedimiento: " + nombreProcedimiento);
         setSize(850, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
-        JLabel titulo = new JLabel("Resultados de: " + nombreFuncion, SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Resultados de: " + nombreProcedimiento, SwingConstants.CENTER);
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         add(titulo, BorderLayout.NORTH);
 
@@ -33,38 +33,57 @@ public class VProcedimientoResultado extends JFrame {
         JScrollPane scroll = new JScrollPane(tabla);
         add(scroll, BorderLayout.CENTER);
 
-        // Construye SQL según si el parámetro existe o no
-        String sql = (parametro == null || parametro.trim().isEmpty())
-                ? "SELECT * FROM " + nombreFuncion + "()"
-                : "SELECT * FROM " + nombreFuncion + "('" + parametro + "')";
+        try {
+            CallableStatement stmt;
 
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            ResultSetMetaData meta = rs.getMetaData();
-            int columnas = meta.getColumnCount();
-            DefaultTableModel modelo = new DefaultTableModel();
-
-            // Ocultar los encabezados: columnas vacías
-            for (int i = 1; i <= columnas; i++) {
-                modelo.addColumn(""); // encabezados ocultos
+            if (parametro == null || parametro.trim().isEmpty()) {
+                stmt = conn.prepareCall("CALL " + nombreProcedimiento + "()");
+            } else {
+                stmt = conn.prepareCall("CALL " + nombreProcedimiento + "(?)");
+                stmt.setString(1, parametro.trim());
             }
 
-            while (rs.next()) {
-                Object[] fila = new Object[columnas];
-                for (int i = 0; i < columnas; i++) {
-                    fila[i] = rs.getObject(i + 1);
+            boolean tieneResultados = stmt.execute();
+
+            if (tieneResultados) {
+                ResultSet rs = stmt.getResultSet();
+                ResultSetMetaData meta = rs.getMetaData();
+                int columnas = meta.getColumnCount();
+                DefaultTableModel modelo = new DefaultTableModel();
+
+                // Agregar nombres de columnas
+                for (int i = 1; i <= columnas; i++) {
+                    modelo.addColumn(meta.getColumnLabel(i));
                 }
-                modelo.addRow(fila);
+
+                // Agregar filas
+                int rowCount = 0;
+                while (rs.next()) {
+                    Object[] fila = new Object[columnas];
+                    for (int i = 0; i < columnas; i++) {
+                        fila[i] = rs.getObject(i + 1);
+                    }
+                    modelo.addRow(fila);
+                    rowCount++;
+                }
+
+                if (rowCount == 0) {
+                    JOptionPane.showMessageDialog(this, "El procedimiento se ejecutó pero no retornó filas.");
+                }
+
+                tabla.setModel(modelo);
+                rs.close();
+            } else {
+                JOptionPane.showMessageDialog(this, "El procedimiento no retornó resultados.");
             }
 
-            tabla.setModel(modelo);
-            tabla.getTableHeader().setUI(null); // Ocultar encabezados visuales
+            stmt.close();
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this,
                     "Error al ejecutar el procedimiento: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace(); // Para depurar en consola
         }
     }
 }

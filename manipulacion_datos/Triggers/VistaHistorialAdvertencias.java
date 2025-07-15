@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
-import src.DBConnection;
+import src.DBConnectionMySQL; // Asegúrate de usar la conexión MySQL
 
 public class VistaHistorialAdvertencias extends JFrame {
 
@@ -21,18 +21,18 @@ public class VistaHistorialAdvertencias extends JFrame {
         });
         tabla.setModel(modelo);
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnectionMySQL.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM \"LOG_ADVERTENCIAS\" ORDER BY \"FechaHora\" DESC")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM log_advertencias ORDER BY fechahora DESC")) {
 
             while (rs.next()) {
                 modelo.addRow(new Object[]{
-                    rs.getInt("LogID"),
-                    rs.getString("Origen"),
-                    rs.getString("Detalle"),
-                    rs.getString("TablaAfectada"),
-                    rs.getString("ClavePrimaria"),
-                    rs.getTimestamp("FechaHora")
+                    rs.getInt("logid"),
+                    rs.getString("origen"),
+                    rs.getString("detalle"),
+                    rs.getString("tablafectada"),
+                    rs.getString("claveprimaria"),
+                    rs.getTimestamp("fechahora")
                 });
             }
 

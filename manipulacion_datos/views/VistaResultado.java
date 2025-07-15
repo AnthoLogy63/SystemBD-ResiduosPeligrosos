@@ -34,7 +34,7 @@ public class VistaResultado extends JFrame {
         add(scroll, BorderLayout.CENTER);
 
         try (Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM " + nombreVista)) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM " + nombreVista)) {
 
             ResultSetMetaData meta = rs.getMetaData();
             int columnas = meta.getColumnCount();
@@ -54,7 +54,7 @@ public class VistaResultado extends JFrame {
                     String nombreCol = meta.getColumnLabel(i + 1).toLowerCase();
                     if ((nombreCol.contains("nif") || nombreCol.contains("nombre"))
                             && actual != null && actual.equals(anterior[i])) {
-                        fila[i] = ""; 
+                        fila[i] = "";
                     } else {
                         fila[i] = actual;
                         anterior[i] = actual;

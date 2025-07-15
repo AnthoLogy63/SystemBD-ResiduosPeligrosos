@@ -4,7 +4,9 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.sql.*;
+
 import manipulacion_datos.PAlmacenados.VProcedimientoResultado;
+import src.DBConnectionMySQL;
 
 public class PA_PanelPrincipal extends JFrame {
 
@@ -76,38 +78,24 @@ public class PA_PanelPrincipal extends JFrame {
             }
 
             try {
-                Connection conn = src.DBConnection.getConnection();
+                Connection conn = DBConnectionMySQL.getConnection();
                 if (conn == null) throw new SQLException("No se pudo obtener conexión a la BD");
 
-                if (seleccionado.endsWith("_extended")) {
-                    // Funciones que retornan resultados
-                    if (seleccionado.contains("diagnostico")) {
-                        String nif = JOptionPane.showInputDialog(this, "Ingresa el NIF de la empresa:");
-                        if (nif == null || nif.trim().isEmpty()) return;
-                        new VProcedimientoResultado(seleccionado, nif.trim(), conn).setVisible(true);
-                    } else {
-                        // Llamar funciones sin parámetros
-                        new VProcedimientoResultado(seleccionado, "", conn).setVisible(true);
-                    }
-                } else {
-                    // Procedimientos normales tipo CALL
-                    CallableStatement stmt;
-                    if (seleccionado.contains("diagnostico")) {
-                        String nif = JOptionPane.showInputDialog(this, "Ingresa el NIF de la empresa:");
-                        if (nif == null || nif.trim().isEmpty()) return;
-                        stmt = conn.prepareCall("CALL " + seleccionado + "(?)");
-                        stmt.setString(1, nif.trim());
-                    } else {
-                        stmt = conn.prepareCall("CALL " + seleccionado + "()");
-                    }
+                String parametro = null;
 
-                    stmt.execute();
-                    stmt.close();
-                    JOptionPane.showMessageDialog(this, "Procedimiento ejecutado correctamente.");
+                if (seleccionado.contains("diagnostico")) {
+                    parametro = JOptionPane.showInputDialog(this, "Ingresa el NIF de la empresa:");
+                    if (parametro == null || parametro.trim().isEmpty()) return;
                 }
 
+                // Mostrar resultados en tabla
+                new VProcedimientoResultado(seleccionado, parametro, conn).setVisible(true);
+
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al ejecutar el procedimiento: " + ex.getMessage(), "Error SQL", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Error al ejecutar el procedimiento: " + ex.getMessage(),
+                        "Error SQL", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
         });
     }

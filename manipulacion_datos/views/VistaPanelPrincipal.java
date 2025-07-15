@@ -29,12 +29,35 @@ public class VistaPanelPrincipal extends JFrame {
         add(lblTitulo, BorderLayout.NORTH);
 
         String[] columnas = {"Nombre de Vista", "Descripción"};
-        Object[][] datos = {
-            {"vista_empresa_residuos", "Empresas con residuos generados"},
-            {"vista_info_completa_empresa", "Empresas con ubicación completa"},
-            {"vista_total_residuos_por_tipo_y_toxicidad", "Total por tipo y toxicidad"},
-            {"vista_historial_traslados_detallado", "Traslados recientes con detalle (Ultimos 30)"}
-        };
+        Object[][] datos;
+
+        try (Connection conn = src.DBConnectionMySQL.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SHOW FULL TABLES IN restoxicos WHERE Table_type = 'VIEW'")) {
+
+            java.util.List<Object[]> vistas = new ArrayList<>();
+
+            while (rs.next()) {
+                String nombreVista = rs.getString(1);
+                String descripcion = switch (nombreVista) {
+                    case "vista_empresa_residuos" -> "Empresas con residuos generados";
+                    case "vista_historial_traslados_detallado" -> "Historial detallado de traslados";
+                    case "vista_residuos_componentes" -> "Residuos y sus componentes";
+                    case "vista_residuos_detallado" -> "Listado detallado de residuos";
+                    case "vista_total_residuos_por_empresa" -> "Totales por empresa";
+                    case "vista_toxicidades_activas" -> "Toxicidades activas";
+                    default -> "Vista: " + nombreVista;
+                };
+                vistas.add(new Object[]{nombreVista, descripcion});
+            }
+
+            datos = vistas.toArray(new Object[0][]);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error cargando vistas: " + e.getMessage(),
+                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+            datos = new Object[0][0];
+        }
 
         DefaultTableModel modelo = new DefaultTableModel(datos, columnas) {
             public boolean isCellEditable(int row, int column) {
@@ -91,37 +114,9 @@ public class VistaPanelPrincipal extends JFrame {
             if (fila != -1) {
                 String vistaSeleccionada = (String) tablaVistas.getValueAt(fila, 0);
                 try {
-                    Connection conn = src.DBConnection.getConnection();
+                    Connection conn = src.DBConnectionMySQL.getConnection();
                     if (conn != null) {
-                        if (vistaSeleccionada.equals("vista_diagnostico_empresa")) {
-                            Statement stmt = conn.createStatement();
-                            ResultSet rs = stmt.executeQuery("SELECT \"EmpNif\", \"EmpNom\" FROM \"R1M_EMPRESA\"");
-                            java.util.List<String> opciones = new java.util.ArrayList<>();
-                            while (rs.next()) {
-                                String nif = rs.getString("EmpNif");
-                                String nombre = rs.getString("EmpNom");
-                                opciones.add(nif + " - " + nombre);
-                            }
-                            rs.close();
-                            stmt.close();
-
-                            if (!opciones.isEmpty()) {
-                                JComboBox<String> combo = new JComboBox<>(opciones.toArray(new String[0]));
-                                int seleccion = JOptionPane.showConfirmDialog(null, combo, "Selecciona una empresa", JOptionPane.OK_CANCEL_OPTION);
-
-                                if (seleccion == JOptionPane.OK_OPTION) {
-                                    String seleccionado = (String) combo.getSelectedItem();
-                                    String nifSeleccionado = seleccionado.split(" - ")[0];
-                                    Statement execStmt = conn.createStatement();
-                                    execStmt.execute("CALL pa_diagnostico_empresa('" + nifSeleccionado + "')");
-                                    JOptionPane.showMessageDialog(null, "Procedimiento ejecutado para NIF: " + nifSeleccionado);
-                                }
-                            } else {
-                                JOptionPane.showMessageDialog(null, "No hay empresas registradas.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                            }
-                        } else {
-                            new VistaResultado(vistaSeleccionada, conn).setVisible(true);
-                        }
+                        new VistaResultado(vistaSeleccionada, conn).setVisible(true);
                     } else {
                         JOptionPane.showMessageDialog(this,
                                 "No se pudo conectar a la base de datos.",
